@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCI Study Dashboard - Principi Contabili Internazionali</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Q&A Database Import -->
+    <script src="questions_db.js"></script>
+    
+    <style>
+        :root {
+            /* Palette HSL Premium Dark Mode */
+            --bg-base: hsl(222, 47%, 9%);
+            --bg-surface: hsla(223, 47%, 14%, 0.7);
+            --bg-surface-hover: hsla(223, 47%, 18%, 0.8);
+            --border-color: hsla(217, 30%, 25%, 0.5);
+            --border-hover: hsla(263, 70%, 60%, 0.4);
+            
+            --primary: hsl(263, 80%, 60%);
+            --primary-glow: hsla(263, 80%, 60%, 0.35);
+            --cyan: hsl(190, 90%, 50%);
+            --cyan-glow: hsla(190, 90%, 50%, 0.2);
+            --green: hsl(142, 70%, 45%);
+            --green-glow: hsla(142, 70%, 45%, 0.2);
+            --yellow: hsl(45, 93%, 47%);
+            --yellow-glow: hsla(45, 93%, 47%, 0.2);
+            --red: hsl(350, 80%, 55%);
+            --red-glow: hsla(350, 80%, 55%, 0.2);
+            
+            --text-primary: hsl(210, 40%, 98%);
+            --text-secondary: hsl(215, 20%, 75%);
+            --text-muted: hsl(217, 10%, 50%);
+            
+            --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --glass-blur: blur(16px);
+
+            --bg-day-box: hsla(223, 47%, 18%, 0.4);
+            --bg-qa-body: hsla(223, 47%, 18%, 0.15);
+        }
+
+        body.light-theme {
+            /* Palette HSL Premium Light Mode */
+            --bg-base: hsl(220, 25%, 95%);
+            --bg-surface: hsla(220, 25%, 90%, 0.6);
+            --bg-surface-hover: hsla(220, 25%, 85%, 0.7);
+            --border-color: hsla(220, 20%, 75%, 0.4);
+            --border-hover: hsla(263, 60%, 50%, 0.4);
+            
+            --primary: hsl(263, 70%, 45%);
+            --primary-glow: hsla(263, 70%, 45%, 0.15);
+            --cyan: hsl(195, 85%, 35%);
+            --cyan-glow: hsla(195, 85%, 35%, 0.15);
+            --green: hsl(142, 60%, 35%);
+            --green-glow: hsla(142, 60%, 35%, 0.1);
+            --yellow: hsl(38, 85%, 40%);
+            --yellow-glow: hsla(38, 85%, 40%, 0.1);
+            --red: hsl(350, 70%, 45%);
+            --red-glow: hsla(350, 70%, 45%, 0.1);
+            
+            --text-primary: hsl(222, 35%, 15%);
+            --text-secondary: hsl(222, 20%, 35%);
+            --text-muted: hsl(222, 10%, 55%);
+
+            --bg-day-box: hsla(220, 25%, 87%, 0.5);
+            --bg-qa-body: hsla(220, 25%, 87%, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar custom */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Layout con Sidebar */
+        aside {
+            width: 280px;
+            background: var(--bg-surface);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 2rem 1.5rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 3rem;
+        }
+
+        .logo-area i {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            filter: drop-shadow(0 0 8px var(--cyan-glow));
+        }
+
+        .logo-area h1 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-primary), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-primary);
+            background: var(--bg-surface-hover);
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active i {
+            color: var(--cyan);
+            filter: drop-shadow(0 0 5px var(--cyan-glow));
+        }
+
+        .nav-item i {
+            width: 20px;
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Contenitore Principale */
+        main {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 2.5rem 3rem;
+            max-width: 1400px;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h2 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .study-progress-card {
+            background: linear-gradient(135deg, var(--bg-surface), hsla(263, 80%, 15%, 0.15));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .progress-ring-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .progress-details h4 {
+            font-size: 1.1rem;
+            font-family: var(--font-display);
+            margin-bottom: 2px;
+        }
+
+        .progress-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Sezioni dei Contenuti */
+        .section-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Overview Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .stat-icon.blue { background: rgba(0, 180, 216, 0.15); color: var(--cyan); }
+        .stat-icon.purple { background: rgba(138, 43, 226, 0.15); color: var(--primary); }
+        .stat-icon.green { background: rgba(46, 204, 113, 0.15); color: var(--green); }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .stat-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Calendar Study Plan CSS */
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .week-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 1.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .week-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .week-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .week-progress {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+        }
+
+        .day-box {
+            background: var(--bg-day-box);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        .day-box:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--border-hover);
+            transform: scale(1.03);
+        }
+
+        .day-box.completed {
+            border-color: var(--green);
+            background: rgba(46, 204, 113, 0.05);
+        }
+
+        .day-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-number {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .day-box.completed .day-number {
+            color: var(--green);
+        }
+
+        .day-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--text-muted);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: transparent;
+            transition: var(--transition-smooth);
+        }
+
+        .day-box.completed .day-checkbox {
+            border-color: var(--green);
+            background-color: var(--green);
+            color: var(--text-primary);
+        }
+
+        .day-title {
+            font-size: 0.78rem;
+            font-weight: 500;
+            line-height: 1.3;
+            color: var(--text-secondary);
+            height: 48px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .day-box.completed .day-title {
+            color: var(--text-primary);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Q&A Bank Explorer CSS */
+        .qa-controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-bar {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 12px 12px 42px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .select-filter {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .select-filter:focus {
+            border-color: var(--cyan);
+        }
+
+        .qa-bank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .qa-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .qa-card.expanded {
+            border-color: var(--border-hover);
+        }
+
+        .qa-header-area {
+            padding: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            gap: 16px;
+        }
+
+        .qa-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .tag.standard { background: rgba(0, 180, 216, 0.15); color: var(--cyan); }
+        .tag.prof { background: rgba(138, 43, 226, 0.15); color: var(--primary); }
+
+        .qa-title-text {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .qa-controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .status-pill {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .status-pill.to-study { background-color: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+        .status-pill.in-progress { background-color: var(--yellow); box-shadow: 0 0 8px var(--yellow-glow); }
+        .status-pill.learned { background-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+
+        .expand-icon {
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+
+        .qa-card.expanded .expand-icon {
+            transform: rotate(180deg);
+            color: var(--cyan);
+        }
+
+        .qa-body-area {
+            display: none;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-qa-body);
+        }
+
+        .qa-card.expanded .qa-body-area {
+            display: block;
+        }
+
+        .qa-answer {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            padding-top: 1.2rem;
+        }
+
+        .qa-answer h5 {
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            margin: 1.2rem 0 0.5rem 0;
+        }
+
+        .qa-answer ul, .qa-answer ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .qa-answer li {
+            margin-bottom: 5px;
+        }
+
+        .qa-answer code {
+            font-family: monospace;
+            background: var(--bg-surface-hover);
+            color: var(--cyan);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .journal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .journal-table th, .journal-table td {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .journal-table th {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-weight: 600;
+        }
+
+        .journal-table tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .journal-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .journal-table td.amount {
+            text-align: right;
+            font-family: monospace;
+            color: var(--cyan);
+        }
+
+        .qa-status-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dotted var(--border-color);
+            align-items: center;
+        }
+
+        .qa-status-selector span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-right: auto;
+        }
+
+        .status-btn {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .status-btn.to-study-btn:hover, .status-btn.active.to-study-btn {
+            background: rgba(235, 77, 75, 0.1);
+            color: var(--red);
+            border-color: var(--red);
+        }
+        .status-btn.in-progress-btn:hover, .status-btn.active.in-progress-btn {
+            background: rgba(241, 196, 15, 0.1);
+            color: var(--yellow);
+            border-color: var(--yellow);
+        }
+        .status-btn.learned-btn:hover, .status-btn.active.learned-btn {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--green);
+            border-color: var(--green);
+        }
+
+        /* Calculator Section CSS */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .calc-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .calc-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: var(--bg-surface-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .input-group input:focus {
+            border-color: var(--cyan);
+        }
+
+        .calc-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), hsl(263, 80%, 50%));
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-top: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        .calc-result {
+            margin-top: 1.2rem;
+            padding: 1rem;
+            background: hsla(223, 47%, 18%, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .calc-result span.value {
+            color: var(--cyan);
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        /* Lease Amortization Table wrapper */
+        .lease-amortization-wrap {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .lease-amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .lease-amortization-table th, .lease-amortization-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .lease-amortization-table th {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-primary);
+        }
+
+        /* Flashcards CSS */
+        .flashcards-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card-flipper {
+            width: 100%;
+            height: 350px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-flipper.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--bg-surface), hsla(190, 90%, 20%, 0.1));
+            color: var(--text-primary);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--bg-surface), hsla(263, 80%, 20%, 0.15));
+            color: var(--text-primary);
+            transform: rotateY(180deg);
+        }
+
+        .card-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--cyan);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .card-front h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .card-back-content {
+            width: 100%;
+        }
+
+        .card-back h4 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            color: var(--cyan);
+            margin-bottom: 1rem;
+        }
+
+        .card-flip-prompt {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .flashcard-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .flashcard-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .flashcard-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-surface-hover);
+            color: var(--cyan);
+        }
+
+        /* Modal o Dettagli per il giorno */
+        .day-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .day-modal.active {
+            display: flex;
+        }
+
+        .day-modal-content {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            position: relative;
+            animation: modalSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalSlide {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .close-modal-btn:hover {
+            color: var(--red);
+        }
+
+        .modal-week {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .modal-day-num {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .modal-topic {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .modal-details h5 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .modal-details ul {
+            padding-left: 20px;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .modal-details li {
+            margin-bottom: 5px;
+        }
+
+        .modal-footer-btn {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .complete-day-btn {
+            background: var(--green);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .complete-day-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Layout adjustments */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .calc-grid {
+                grid-template-columns: 1fr;
+            }
+            .days-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                width: 70px;
+                padding: 1.5rem 0.5rem;
+            }
+            .logo-area h1, .sidebar-footer, .nav-item span {
+                display: none;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            main {
+                margin-left: 70px;
+                padding: 1.5rem;
+            }
+            .days-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .qa-controls {
+                grid-template-columns: 1fr;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside>
+        <div class="logo-area">
+            <i class="fa-solid fa-calculator"></i>
+            <h1>PCI Study Hub</h1>
+        </div>
+        
+        <nav>
+            <div class="nav-item active" onclick="switchSection('overview')">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Overview</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('studyplan')">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Calendario di Studio</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('qabank')">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Banca Domande</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('calculators')">
+                <i class="fa-solid fa-toolbox"></i>
+                <span>Sandbox Calcoli</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('flashcards')">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Flashcards Scritture</span>
+            </div>
+        </nav>
+
+        <div style="margin-top: auto; margin-bottom: 1rem;">
+            <div class="nav-item" onclick="toggleTheme()" style="background: transparent; border: 1px solid var(--border-color); justify-content: flex-start;">
+                <i class="fa-solid fa-sun" id="theme-icon"></i>
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>PCI WebApp v1.0.0</p>
+            <p>Esame Luglio/Settembre 2026</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+        
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h2 id="page-title">Overview Preparazione</h2>
+                <p id="page-subtitle">Rendiconto del tuo percorso di studi da zero</p>
+            </div>
+
+            <!-- Mini Progress Card -->
+            <div class="study-progress-card">
+                <div class="progress-ring-container">
+                    <svg width="60" height="60">
+                        <circle stroke="var(--border-color)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                        <circle id="progress-circle" class="progress-ring-circle" stroke="var(--green)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="163.36" stroke-dashoffset="163.36"/>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 700; font-size: 0.85rem; font-family: var(--font-display);" id="progress-text">0%</div>
+                </div>
+                <div class="progress-details">
+                    <h4>Studio Completato</h4>
+                    <p id="progress-subtitle">0 di 28 giorni coperti</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= SECTION: OVERVIEW ================= -->
+        <section id="sec-overview" class="section-panel active">
+            <!-- Stat Cards -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-total-q">39</h3>
+                        <p>Domande Totali</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-progress-q">0</h3>
+                        <p>Domande in Studio</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-completed-q">0</h3>
+                        <p>Domande Completate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Area -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 1rem; color: var(--cyan);">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i>
+                    Strategia di Studio Intensivo (4 Settimane da Zero)
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Studiare l'intero programma di <strong>Principi Contabili Internazionali (PCI)</strong> in 4 settimane richiede una rigorosa pianificazione. Questo sito web ti aiuterà a monitorare il progresso giornaliero, fare simulazioni contabili interattive e visualizzare le risposte a tutte le domande degli esami reali dei diversi docenti.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="background: hsla(223, 47%, 18%, 0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem;">
+                        <h4 style="color: var(--text-primary); margin-bottom: 8px;"><i class="fa-solid fa-list-check" style="color:var(--primary); margin-right: 6px;"></i> Regole d'Oro per la Pratica</h4>
+                        <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px;">
+                            <li>Esercitati sulle <strong>scritture contabili in Partita Doppia</strong> (Revaluation Model, IFRS 16 Lessee, CGU Impairment).</li>
+                            <li>Tieni d'occhio la differenza di valutazione tra <strong>IASB (internazionale)</strong> e <strong>OIC (nazionale)</strong>.</li>
+                            <li>Comprendi il concetto di <strong>Recycling</strong> in OCI: è una delle domande più gettonate all'esame.</li>
+                        </ul>
+                    </div>
+                    <div style="background: hsla(223, 47%, 18%, 0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem;">
+                        <h4 style="color: var(--text-primary); margin-bottom: 8px;"><i class="fa-solid fa-award" style="color:var(--cyan); margin-right: 6px;"></i> Focus Docenti</h4>
+                        <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px;">
+                            <li><strong>Ferri & Spanò</strong> si focalizzano fortemente sull'Impairment (IAS 36), OCI, e provisions.</li>
+                            <li><strong>Maffei</strong> chiede quasi sempre il leasing (IFRS 16) e la capitalizzazione di Ricerca & Sviluppo.</li>
+                            <li><strong>Allini & Zampella</strong> insistono molto sugli strumenti finanziari (IFRS 9), EPS e derivati.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: STUDY PLAN ================= -->
+        <section id="sec-studyplan" class="section-panel">
+            <div class="calendar-container" id="calendar-view">
+                <!-- Verrà popolato dinamicamente via JS -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION: Q&A BANK ================= -->
+        <section id="sec-qabank" class="section-panel">
+            <!-- Search & Filters -->
+            <div class="qa-controls">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search-bar" id="search-input" placeholder="Cerca parole chiave, principi o argomenti..." oninput="filterQA()">
+                </div>
+                <select class="select-filter" id="filter-standard" onchange="filterQA()">
+                    <option value="">Tutti i Principi Contabili</option>
+                    <option value="Conceptual Framework">Conceptual Framework</option>
+                    <option value="IAS 1">IAS 1 (Presentazione)</option>
+                    <option value="IAS 7">IAS 7 (Rendiconto Finanziario)</option>
+                    <option value="IAS 16">IAS 16 (Immobilizzazioni Mat.)</option>
+                    <option value="IAS 38">IAS 38 (Immobilizzazioni Immat.)</option>
+                    <option value="IAS 36">IAS 36 (Impairment)</option>
+                    <option value="IFRS 16">IFRS 16 (Leasing)</option>
+                    <option value="IFRS 15">IFRS 15 (Ricavi)</option>
+                    <option value="IFRS 3">IFRS 3 (Business Combinations)</option>
+                    <option value="IFRS 9">IFRS 9 / IAS 32 / IAS 39 (Strumenti Fin.)</option>
+                    <option value="IAS 37">IAS 37 (Accantonamenti)</option>
+                    <option value="IAS 33">IAS 33 (Earnings Per Share)</option>
+                    <option value="IFRS 2">IFRS 2 (Stock Options)</option>
+                    <option value="IFRS 1 / OIC 33">IFRS 1 / OIC 33 (Transizioni)</option>
+                    <option value="IFRS 13">IFRS 13 (Fair Value)</option>
+                    <option value="Crypto & Sustainability">Crypto & Sostenibilità</option>
+                </select>
+                <select class="select-filter" id="filter-prof" onchange="filterQA()">
+                    <option value="">Tutti i Docenti</option>
+                    <option value="Ferri">Ferri</option>
+                    <option value="Spanò">Spanò</option>
+                    <option value="Spagnuolo">Spagnuolo</option>
+                    <option value="Maffei">Maffei</option>
+                    <option value="Ginesti">Ginesti</option>
+                    <option value="Zampella">Zampella</option>
+                    <option value="Meucci">Meucci</option>
+                    <option value="Casciello">Casciello</option>
+                    <option value="Allini">Allini</option>
+                </select>
+            </div>
+
+            <!-- Q&A List -->
+            <div class="qa-bank-list" id="qa-cards-list">
+                <!-- Verrà popolato dinamicamente via JS -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION: CALCULATORS ================= -->
+        <section id="sec-calculators" class="section-panel">
+            <div class="calc-grid">
+                
+                <!-- CAPM & WACC Calculator -->
+                <div class="calc-card">
+                    <h3><i class="fa-solid fa-calculator"></i> Calcolatore WACC & CAPM</h3>
+                    <div class="input-group">
+                        <label>Tasso Risk-Free (Rf) (%)</label>
+                        <input type="number" id="calc-rf" value="3.5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Beta aziendale (β)</label>
+                        <input type="number" id="calc-beta" value="1.2" step="0.05">
+                    </div>
+                    <div class="input-group">
+                        <label>Rendimento Atteso di Mercato (Rm) (%)</label>
+                        <input type="number" id="calc-rm" value="8.0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Costo del Debito (Kd) (%)</label>
+                        <input type="number" id="calc-kd" value="5.0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Valore del Capitale Netto (Equity - E)</label>
+                        <input type="number" id="calc-equity" value="600000">
+                    </div>
+                    <div class="input-group">
+                        <label>Valore dell'Indebitamento (Debito - D)</label>
+                        <input type="number" id="calc-debt" value="400000">
+                    </div>
+                    <div class="input-group">
+                        <label>Aliquota Fiscale (t) (%)</label>
+                        <input type="number" id="calc-tax" value="24">
+                    </div>
+                    <button class="calc-btn" onclick="calculateWACC()">Calcola Costi Capitale</button>
+                    
+                    <div class="calc-result" id="wacc-result" style="display:none;">
+                        <p>Costo dell'Equity (CAPM - $K_e$): <span class="value" id="res-ke">0.00%</span></p>
+                        <p>Costo del Debito Netto ($K_d(1-t)$): <span class="value" id="res-kd-net">0.00%</span></p>
+                        <p style="margin-top:8px; font-weight:700; border-top:1px dashed var(--border-color); padding-top:8px;">
+                            WACC: <span class="value" id="res-wacc" style="color:var(--primary);">0.00%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- IFRS 16 Lessee Calculator -->
+                <div class="calc-card">
+                    <h3><i class="fa-solid fa-house-laptop"></i> Calcolatore Leasing Lessee (IFRS 16)</h3>
+                    <div class="input-group">
+                        <label>Canone Annuo del Leasing (€)</label>
+                        <input type="number" id="lease-payment" value="20000">
+                    </div>
+                    <div class="input-group">
+                        <label>Tasso di Sconto Annuo (%)</label>
+                        <input type="number" id="lease-rate" value="4.5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Durata del Contratto (Anni)</label>
+                        <input type="number" id="lease-years" value="5" min="1" max="20">
+                    </div>
+                    <button class="calc-btn" onclick="calculateLease()">Calcola Debito / ROU Asset</button>
+                    
+                    <div class="calc-result" id="lease-result" style="display:none;">
+                        <p>Valore Iniziale Diritto d'Uso (ROU) / Lease Liability: <span class="value" id="res-lease-pv">€0.00</span></p>
+                        
+                        <div class="lease-amortization-wrap">
+                            <table class="lease-amortization-table">
+                                <thead>
+                                    <tr>
+                                        <th>Anno</th>
+                                        <th>Rata (€)</th>
+                                        <th>Quota Interessi (€)</th>
+                                        <th>Quota Capitale (€)</th>
+                                        <th>Debito Residuo (€)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lease-table-body">
+                                    <!-- Popolato via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic EPS Calculator -->
+                <div class="calc-card" style="grid-column: span 2;">
+                    <h3><i class="fa-solid fa-coins"></i> Calcolatore Utile per Azione (Basic EPS - IAS 33)</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div class="input-group">
+                            <label>Utile Netto d'Esercizio (€)</label>
+                            <input type="number" id="eps-income" value="150000">
+                        </div>
+                        <div class="input-group">
+                            <label>Dividendi Azioni Privilegiate (€)</label>
+                            <input type="number" id="eps-preferred" value="10000">
+                        </div>
+                        <div class="input-group">
+                            <label>Azioni in Circolazione (Media Ponderata)</label>
+                            <input type="number" id="eps-shares" value="50000">
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calculateEPS()">Calcola Basic EPS</button>
+                    
+                    <div class="calc-result" id="eps-result" style="display:none;">
+                        <p>Utile attribuibile agli azionisti ordinari: <span class="value" id="res-eps-attributable">€0.00</span></p>
+                        <p style="margin-top:8px; font-weight:700;">
+                            Basic EPS (IAS 33): <span class="value" id="res-eps" style="color:var(--green); font-size:1.2rem;">€0.00 per azione</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= SECTION: FLASHCARDS ================= -->
+        <section id="sec-flashcards" class="section-panel">
+            <div class="flashcards-container">
+                <div class="card-flipper" id="flashcard" onclick="flipCard()">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-badge" id="card-front-badge">IAS 16 - Revaluation Model</div>
+                            <h4 id="card-front-text">Come si registra in Partita Doppia una rivalutazione di un impianto per €20.000 se non c'erano svalutazioni precedenti?</h4>
+                            <p class="card-flip-prompt"><i class="fa-solid fa-arrows-rotate"></i> Clicca per girare</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-back-content">
+                                <div class="card-badge" id="card-back-badge">Risposta</div>
+                                <h4 id="card-back-title">Scrittura contabile in Partita Doppia:</h4>
+                                <div id="card-back-html">
+                                    <!-- Contenuto via JS -->
+                                </div>
+                            </div>
+                            <p class="card-flip-prompt"><i class="fa-solid fa-arrows-rotate"></i> Clicca per girare</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flashcard-nav">
+                    <button class="flashcard-btn" onclick="prevCard()"><i class="fa-solid fa-arrow-left"></i></button>
+                    <span id="flashcard-counter" style="font-weight: 600; font-family: var(--font-display);">1 di 5</span>
+                    <button class="flashcard-btn" onclick="nextCard()"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal per Dettaglio Giorni Calendario -->
+    <div class="day-modal" id="day-modal">
+        <div class="day-modal-content">
+            <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-week" id="modal-week-name">Settimana 1</div>
+            <div class="modal-day-num" id="modal-day-title">Giorno 1</div>
+            <div class="modal-topic" id="modal-day-topic">Il Processo di Standardizzazione</div>
+            <div class="modal-details" id="modal-day-details">
+                <!-- Elenco dettagli e argomenti -->
+            </div>
+            <div class="modal-footer-btn">
+                <button class="complete-day-btn" id="modal-complete-btn" onclick="toggleCurrentDay()">Segna come Completato</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Base per Q&A ed Esercizi -->
+    <script>
+        // Database dei giorni del calendario
+        const studyPlanDays = [
+            // Settimana 1
+            { week: 1, day: 1, topic: "Processo di Standardizzazione", details: ["Storia dallo IASC allo IASB.", "Differenza rule-based (IAS) vs principle-based (IFRS).", "Obbligatorietà in Italia dal 2005 (quotate, banche, assicurazioni).", "Ruolo di EFRAG, IFRIC e processo di Endorsement UE."], ref: "Dispensa pag. 1" },
+            { week: 1, day: 2, topic: "Conceptual Framework (Cap. 1-3)", details: ["Obiettivo del financial reporting.", "Stewardship e rendicontazione dei manager.", "Caratteristiche qualitative fondamentali: Relevance e Faithful Representation.", "Caratteristiche qualitative di secondo livello (comparabilità, verificabilità, comprensibilità).", "Rilevanza quali-quantitativa (Materiality)."], ref: "Dispensa pag. 2-3" },
+            { week: 1, day: 3, topic: "Conceptual Framework (Cap. 4-8)", details: ["Definizioni di Attività (Asset) e Passività (Liability).", "Differenza tra vecchie e nuove definizioni (concetto di risorsa economica controllata).", "Definizione di patrimonio netto, ricavi e costi.", "Criteri di Recognition/Derecognition.", "Criteri di misurazione: Costo Storico vs Valore Corrente."], ref: "Dispensa pag. 4-5" },
+            { week: 1, day: 4, topic: "IAS 1 - Presentazione del Bilancio", details: ["Postulati: Going concern, Competenza economica, Aggregazione e Compensazione.", "Struttura del Conto Economico Complessivo (Profit or Loss vs OCI).", "Concetto di OCI e operatività del Recycling.", "Stato Patrimoniale (corrente vs non corrente).", "Nota integrativa e variazioni di PN."], ref: "Dispensa pag. 6-11" },
+            { week: 1, day: 5, topic: "IAS 7 - Rendiconto Finanziario", details: ["Importanza del flusso di cassa (Cash is reality).", "Le 3 aree del RF: operativa, investimenti, finanziamenti.", "Metodo Diretto vs Metodo Indiretto per la gestione operativa.", "Esercizio pratico di rettifica dell'utile netto per calcolo cassa operativa."], ref: "Dispensa pag. 14-16" },
+            { week: 1, day: 6, topic: "Analisi Integrata e Indicatori", details: ["EBITDA come autofinanziamento contabile.", "Relazione NOPAT vs OFCF: fasi di espansione vs contrazione.", "Indici: DSCR (Debt Service Coverage Ratio), PFN / EBITDA.", "EPS (Earnings Per Share) e Dividend Yield."], ref: "Dispensa pag. 17-22" },
+            { week: 1, day: 7, topic: "Simulazione & Ripasso Settimana 1", details: ["Ripasso generale dei concetti teorici della settimana.", "Risoluzione delle domande d'esame inerenti il Framework, IAS 1 e IAS 7."], ref: "Raccolta domande PDF" },
+            
+            // Settimana 2
+            { week: 2, day: 8, topic: "IAS 16 - Valutazione Iniziale Cespiti", details: ["Definizione immobilizzazioni materiali.", "Costo storico di acquisto vs costo di produzione in economia.", "Oneri accessori inclusi e costi esclusi (es. costi di start-up).", "Spese successive: manutenzione ordinaria vs straordinaria."], ref: "Dispensa pag. 23-24" },
+            { week: 2, day: 9, topic: "IAS 16 - Valutazione Successiva", details: ["Scelta dei criteri: Cost Model vs Revaluation Model.", "Registrazioni contabili della rivalutazione con imputazione a OCI (riserva rivalutazione).", "Azzardamento o ripristino di vecchie svalutazioni passate a P&L.", "Metodi di ammortamento."], ref: "Dispensa pag. 24-25" },
+            { week: 2, day: 10, topic: "IAS 38 - Immobilizzazioni Immateriali", details: ["Definizione e requisiti: identificabilità, controllo, benefici futuri.", "Ricerca (spesata a CE) vs Sviluppo (capitalizzato se soddisfa 6 criteri).", "Costi di pubblicità (spesati IAS 38 vs capitalizzabili OIC 24)."], ref: "Dispensa pag. 26-27" },
+            { week: 2, day: 11, topic: "IAS 38 - Vita Utile e Ammortamento", details: ["Vita utile definita (ammortizzata) vs indefinita (es. avviamento, marchi).", "Indefinita: nessun ammortamento, ma impairment test annuale.", "Esercizio pratico di ammortamento e svalutazione brevetti."], ref: "Dispensa pag. 28-32" },
+            { week: 2, day: 12, topic: "IAS 36 - Impairment Test", details: ["Definizione di svalutazione per perdite durevoli.", "Indicatori esterni (tassi, mercato, leggi) ed indicatori interni (obsolescenza, crisi).", "Valore recuperabile: il maggiore tra Fair Value Netto e Valore d'Uso (Value in Use)."], ref: "Dispensa pag. 36-37" },
+            { week: 2, day: 13, topic: "IAS 36 - Cash-Generating Units (CGU)", details: ["Definizione di CGU come più piccolo gruppo di asset che genera cassa autonoma.", "Impairment test su CGU con e senza goodwill.", "Allocazione dei corporate assets ed impairment di gruppo.", "Stima del valore d'uso (DCF, WACC, CAPM)."], ref: "Dispensa pag. 38-42" },
+            { week: 2, day: 14, topic: "Esercitazione Cespiti e Impairment", details: ["Risoluzione scritta in partita doppia di rivalutazioni IAS 16.", "Calcolo ed allocazione della svalutazione di una CGU con goodwill."], ref: "Dispensa pag. 25, 30, 40" },
+            
+            // Settimana 3
+            { week: 3, day: 15, topic: "IFRS 16 - Fondamenti Leasing", details: ["Sostituzione dello IAS 17 e superamento della distinzione finanziario/operativo.", "Identificazione del leasing: benefit element (bene identificato) e power element (controllo).", "Differenza con i contratti di servizio.", "Esenzioni per contratti brevi (<12 mesi) o di basso valore (<5000$)."], ref: "Dispensa pag. 43-44" },
+            { week: 3, day: 16, topic: "IFRS 16 - Contabilizzazione Lessee", details: ["Logica contabile lessee: ROU Asset (Attivo) e Lease Liability (Passivo).", "Scrittura iniziale per valore attuale dei canoni futuri.", "Registrazione successiva: canone (riduzione debito e interessi passivi) e ammortamento ROU.", "Impatto indici di bilancio (EBITDA sale, leverage sale)."], ref: "Dispensa pag. 45-47" },
+            { week: 3, day: 17, topic: "IFRS 15 - Ricavi da Contratti (Fasi 1-3)", details: ["Modello unico in 5 step.", "Step 1: Identificazione contratto.", "Step 2: Performance Obligations (obbligazioni distinte); garanzie assurance vs service.", "Step 3: Prezzo transazione; componenti finanziarie significative e corrispettivi variabili."], ref: "Dispensa pag. 50-52" },
+            { week: 3, day: 18, topic: "IFRS 15 - Ricavi da Contratti (Fasi 4-5)", details: ["Step 4: Allocazione del prezzo delle PO basata sullo stand-alone selling price.", "Step 5: Riconoscimento del ricavo (al trasferimento del controllo).", "Rilevazione Point in Time vs Over Time (% avanzamento - input/output).", "Costi adempimento contratto."], ref: "Dispensa pag. 53-55" },
+            { week: 3, day: 19, topic: "IFRS 3 - Business Combinations", details: ["Definizione e scopo aggregazioni aziendali.", "Metodo dell'acquisizione in 5 fasi.", "Identificazione data acquisizione, costo acquisizione ed earn-out.", "Purchase Price Allocation (PPA) su attività e passività al Fair Value."], ref: "Dispensa pag. 48-49" },
+            { week: 3, day: 20, topic: "IFRS 3 - Goodwill e Valutazione", details: ["Calcolo dell'avviamento (Goodwill) e del Gain from bargain purchase (CE).", "Metodi di stima del Fair value degli intangibili non iscritti (Market, Income, Cost approach).", "Reverse acquisition (cenni)."], ref: "Dispensa pag. 30, 34-35" },
+            { week: 3, day: 21, topic: "Esercitazione Ricavi, Leasing e IFRS 3", details: ["Esercizi numerici e scritture in partita doppia per IFRS 16 (Lessee) e IFRS 15 (Contratto multi-elemento).", "Simulazione calcolo Goodwill."], ref: "Esercizi dispense" },
+            
+            // Settimana 4
+            { week: 4, day: 22, topic: "IFRS 9 - Attività Finanziarie", details: ["Definizione strumento finanziario (IAS 32).", "Classificazione attività basata su Business Model test e SPPI test.", "Categorie: Costo Ammortizzato, FVTOCI (con/senza recycling), FVTPL.", "Fair Value Option (FVO).", "Riclassificazioni."], ref: "Dispensa pag. 92, 96-99" },
+            { week: 4, day: 23, topic: "IFRS 9 - Impairment Strumenti Finanziari", details: ["Superamento della Incurred Loss (IAS 39) a favore della Expected Credit Loss (ECL).", "I tre stadi del rischio (Stage 1, Stage 2, Stage 3).", "Calcolo ECL (PD x LGD x ED).", "Calcolo interessi attivi: gross basis (Stage 1-2) vs net basis (Stage 3)."], ref: "Dispensa pag. 100-103" },
+            { week: 4, day: 24, topic: "Derivati e Hedge Accounting", details: ["Definizione di derivato (FV iniziale nullo, legato a sottostante).", "Hedge accounting vs speculazione.", "Fair Value Hedge (tasso fisso, copre variazioni FV; elementi a P&L).", "Cash Flow Hedge (tasso variabile, copre flussi; parte efficace a OCI, inefficace a P&L).", "Scritture di swap (IRS)."], ref: "Dispensa pag. 104-108" },
+            { week: 4, day: 25, topic: "IAS 37 - Accantonamenti e Passività Pot.", details: ["Definizione di accantonamento (provision).", "Requisiti di iscrizione: obbligazione (legale/implicita) da evento passato, probabile esborso (>50%), stima attendibile.", "Passività potenziali (solo informativa in nota).", "Casi speciali: contratti onerosi, ristrutturazioni, bonifica ambientale."], ref: "Dispensa pag. 56-58" },
+            { week: 4, day: 26, topic: "IAS 33, IFRS 2 e Transizioni", details: ["IAS 33: EPS Base vs EPS Diluito (media ponderata, effetti strumenti diluitivi).", "IFRS 2: Share-based payments; equity-settled vs cash-settled; vesting period.", "Transizioni: IFRS 1 (first-time adopter, SP apertura, riconciliazioni) e OIC 33 (IFRS a OIC, fiscalità differita OIC 25)."], ref: "Dispensa pag. 59-66, 67-77" },
+            { week: 4, day: 27, topic: "IFRS 13, Crypto e Sostenibilità", details: ["IFRS 13: Gerarchia del Fair value (Livelli 1, 2, 3) ed input (osservabili/non).", "Criteri valutazione Titoli di Stato italiani.", "Crypto-assets: contabilità holders (IAS 2 vs IAS 38) ed emittenti.", "ESG: Direttiva 2014/95/UE ed ISSB (IFRS S1)."], ref: "Dispensa pag. 78-84, 90-91" },
+            { week: 4, day: 28, topic: "Simulazione Generale d'Esame", details: ["Simulazione completa basata sulle domande reali dei professori.", "Gestione del tempo e ripasso finale schemi di partita doppia."], ref: "Tutti i PDF del corso" }
+        ];
+
+        // Database delle Flashcards per Partita Doppia
+        const flashcards = [
+            {
+                standard: "IAS 16",
+                question: "Rivalutazione Impianto per €15.000 (nessuna svalutazione precedente). Qual è la scrittura?",
+                title: "Rivalutazione a Riserva OCI",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Impianti (Attivo SP)</td><td>15.000</td><td></td></tr>
+                        <tr><td>Riserva di Rivalutazione (Patrimonio Netto - OCI)</td><td></td><td>15.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">L'incremento patrimoniale transita dall'OCI per non gonfiare l'utile d'esercizio realizzato.</p>
+                `
+            },
+            {
+                standard: "IFRS 16",
+                question: "Stipula contratto di leasing: valore attuale canoni €80.000. Qual è la scrittura iniziale?",
+                title: "Rilevazione iniziale Diritto d'Uso",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Diritto d'Uso (ROU Asset - Attivo)</td><td>80.000</td><td></td></tr>
+                        <tr><td>Debito per Leasing (Lease Liability - Passivo)</td><td></td><td>80.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Si capitalizza il diritto d'uso iscrivendo in contropartita il debito di natura finanziaria.</p>
+                `
+            },
+            {
+                standard: "IAS 36",
+                question: "Svalutazione per Impairment dell'Avviamento (Goodwill) per €10.000. Qual è la scrittura?",
+                title: "Svalutazione Definitiva Avviamento",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Perdite da Svalutazione (Conto Economico)</td><td>10.000</td><td></td></tr>
+                        <tr><td>Avviamento (Goodwill - Attivo)</td><td></td><td>10.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Il Goodwill viene ridotto direttamente. Questa svalutazione non è mai ripristinabile in futuro.</p>
+                `
+            },
+            {
+                standard: "IFRS 2",
+                question: "Rilevazione annua del costo per stock options (equity-settled) assegnate ai dipendenti per €5.000.",
+                title: "Costo del personale con contropartita Riserva Equity",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Spese del Personale / Stock Options (CE)</td><td>5.000</td><td></td></tr>
+                        <tr><td>Riserva per Piani Azionari (Patrimonio Netto)</td><td></td><td>5.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Nelle operazioni equity-settled, la contropartita del costo è un incremento di riserve di patrimonio netto, non un debito.</p>
+                `
+            },
+            {
+                standard: "IAS 32",
+                question: "Emissione di obbligazioni convertibili: cassa incassata €1.000.000 (di cui valore attuale del debito €950.000). Scrittura di stipula.",
+                title: "Scorporo dello Strumento Composto (Ibrido)",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Cassa / Banca (Attivo SP)</td><td>1.000.000</td><td></td></tr>
+                        <tr><td>Prestiti Obbligazionari Convertibili (Passivo)</td><td></td><td>950.000</td></tr>
+                        <tr><td>Riserva per Opzione Conversione (Equity)</td><td></td><td>50.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Lo IAS 32 impone di scindere lo strumento composto isolando la passività pura dall'opzione di conversione (Patrimonio Netto).</p>
+                `
+            }
+        ];
+
+        // Stato dell'applicazione (salvato in localStorage)
+        let appState = {
+            completedDays: {},
+            qaStatus: {} // id -> 'to-study' | 'in-progress' | 'learned'
+        };
+
+        // Carica stato da localStorage
+        function loadState() {
+            const saved = localStorage.getItem('pci_study_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                    if (!appState.completedDays) appState.completedDays = {};
+                    if (!appState.qaStatus) appState.qaStatus = {};
+                } catch (e) {
+                    console.error("Errore lettura localStorage", e);
+                }
+            }
+            updateOverallProgress();
+        }
+
+        // Salva stato in localStorage
+        function saveState() {
+            localStorage.setItem('pci_study_state', JSON.stringify(appState));
+            updateOverallProgress();
+        }
+
+        // Aggiorna indicatori di progresso globali
+        function updateOverallProgress() {
+            const totalDays = 28;
+            const completedCount = Object.keys(appState.completedDays).filter(k => appState.completedDays[k] === true).length;
+            const percentage = Math.round((completedCount / totalDays) * 100);
+            
+            // Progress circle svg
+            const circle = document.getElementById('progress-circle');
+            if (circle) {
+                const radius = 26;
+                const circumference = 2 * Math.PI * radius; // ~163.36
+                const offset = circumference - (percentage / 100) * circumference;
+                circle.strokeDashoffset = offset;
+            }
+            
+            document.getElementById('progress-text').innerText = percentage + '%';
+            document.getElementById('progress-subtitle').innerText = `${completedCount} di ${totalDays} giorni completati`;
+            
+            // Aggiorna contatori banca domande
+            const totalQ = qaDatabase.length;
+            let learnedQ = 0;
+            let inProgressQ = 0;
+            
+            qaDatabase.forEach(q => {
+                const status = appState.qaStatus[q.id];
+                if (status === 'learned') learnedQ++;
+                else if (status === 'in-progress') inProgressQ++;
+            });
+            
+            document.getElementById('stat-total-q').innerText = totalQ;
+            document.getElementById('stat-progress-q').innerText = inProgressQ;
+            document.getElementById('stat-completed-q').innerText = learnedQ;
+        }
+
+        // Switch delle sezioni nella sidebar
+        function switchSection(sectionId) {
+            // Rimuovi classe active a tutte le nav-item
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            // Aggiungi active all'elemento cliccato
+            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+                item.querySelector('span').innerText.toLowerCase().includes(sectionId === 'qabank' ? 'banca' : sectionId === 'studyplan' ? 'calendario' : sectionId === 'calculators' ? 'sandbox' : sectionId === 'flashcards' ? 'flashcards' : 'overview')
+            );
+            if (activeNav) activeNav.classList.add('active');
+
+            // Nascondi tutti i pannelli
+            document.querySelectorAll('.section-panel').forEach(panel => panel.classList.remove('active'));
+            // Mostra il pannello corrente
+            document.getElementById(`sec-${sectionId}`).classList.add('active');
+
+            // Cambia titolo header
+            const titleMap = {
+                overview: { title: "Overview Preparazione", subtitle: "Rendiconto del tuo percorso di studi da zero" },
+                studyplan: { title: "Calendario di Studio", subtitle: "Programma intensivo di 4 settimane (giorno per giorno)" },
+                qabank: { title: "Banca delle Risposte", subtitle: "Risposte complete alle domande d'esame per docente e principio contabile" },
+                calculators: { title: "Sandbox Calcoli Finanziari", subtitle: "Simulatori per leasing, WACC, CAPM ed utile per azione (EPS)" },
+                flashcards: { title: "Flashcards Scritture Contabili", subtitle: "Mettiti alla prova con le principali registrazioni in Partita Doppia" }
+            };
+            document.getElementById('page-title').innerText = titleMap[sectionId].title;
+            document.getElementById('page-subtitle').innerText = titleMap[sectionId].subtitle;
+        }
+
+        // ================= JS: CALENDARIO =================
+        function generateCalendar() {
+            const calendarView = document.getElementById('calendar-view');
+            calendarView.innerHTML = '';
+
+            for (let w = 1; w <= 4; w++) {
+                const weekCard = document.createElement('div');
+                weekCard.className = 'week-card';
+                
+                const weekDays = studyPlanDays.filter(d => d.week === w);
+                const completedInWeek = weekDays.filter(d => appState.completedDays[`w${w}d${d.day}`] === true).length;
+
+                weekCard.innerHTML = `
+                    <div class="week-header">
+                        <h3>Settimana ${w}: ${getWeekTheme(w)}</h3>
+                        <span class="week-progress" id="week-${w}-prog">${completedInWeek} di 7 Giorni completati</span>
+                    </div>
+                    <div class="days-grid" id="week-${w}-days"></div>
+                `;
+                calendarView.appendChild(weekCard);
+
+                const daysGrid = weekCard.querySelector(`#week-${w}-days`);
+                weekDays.forEach(d => {
+                    const dayKey = `w${w}d${d.day}`;
+                    const isCompleted = appState.completedDays[dayKey] === true;
+                    
+                    const dayBox = document.createElement('div');
+                    dayBox.className = `day-box ${isCompleted ? 'completed' : ''}`;
+                    dayBox.id = `box-${dayKey}`;
+                    dayBox.onclick = () => openDayModal(d.week, d.day);
+
+                    dayBox.innerHTML = `
+                        <div class="day-top">
+                            <span class="day-number">Giorno ${d.day}</span>
+                            <div class="day-checkbox">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div class="day-title">${d.topic}</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted); display:flex; align-items:center; gap:3px;">
+                            <i class="fa-solid fa-book"></i> ${d.ref}
+                        </div>
+                    `;
+                    daysGrid.appendChild(dayBox);
+                });
+            }
+        }
+
+        function getWeekTheme(w) {
+            const themes = {
+                1: "Quadro normativo, Conceptual Framework, IAS 1 e IAS 7",
+                2: "Immobilizzazioni e Svalutazioni (IAS 16, IAS 38, IAS 36)",
+                3: "Leasing (IFRS 16), Ricavi (IFRS 15) e Business Combinations (IFRS 3)",
+                4: "IFRS 9, OCI, Accantonamenti, EPS, IFRS 2 e Transizioni"
+            };
+            return themes[w];
+        }
+
+        // Modal Dettaglio Giorno
+        let currentModalDay = { week: 0, day: 0 };
+
+        function openDayModal(week, dayNum) {
+            const dayObj = studyPlanDays.find(d => d.week === week && d.day === dayNum);
+            if (!dayObj) return;
+
+            currentModalDay = { week, day: dayNum };
+            
+            document.getElementById('modal-week-name').innerText = `Settimana ${week}: ${getWeekTheme(week)}`;
+            document.getElementById('modal-day-title').innerText = `Giorno ${dayNum}`;
+            document.getElementById('modal-day-topic').innerText = dayObj.topic;
+
+            const detailsList = document.getElementById('modal-day-details');
+            detailsList.innerHTML = `
+                <h5>Argomenti da studiare oggi:</h5>
+                <ul>
+                    ${dayObj.details.map(det => `<li>${det}</li>`).join('')}
+                </ul>
+                <p style="font-size:0.82rem; color:var(--text-muted);"><i class="fa-solid fa-bookmark" style="color:var(--cyan); margin-right:4px;"></i> <strong>Riferimento Dispensa:</strong> ${dayObj.ref}</p>
+            `;
+
+            const dayKey = `w${week}d${dayNum}`;
+            const isCompleted = appState.completedDays[dayKey] === true;
+            const btn = document.getElementById('modal-complete-btn');
+            
+            if (isCompleted) {
+                btn.innerText = 'Segna come Non Completato';
+                btn.style.backgroundColor = 'var(--red)';
+            } else {
+                btn.innerText = 'Segna come Completato';
+                btn.style.backgroundColor = 'var(--green)';
+            }
+
+            document.getElementById('day-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('day-modal').classList.remove('active');
+        }
+
+        function toggleCurrentDay() {
+            const key = `w${currentModalDay.week}d${currentModalDay.day}`;
+            const currentlyCompleted = appState.completedDays[key] === true;
+            
+            appState.completedDays[key] = !currentlyCompleted;
+            saveState();
+
+            // Aggiorna il calendario visivamente
+            const dayBox = document.getElementById(`box-${key}`);
+            if (dayBox) {
+                if (!currentlyCompleted) {
+                    dayBox.classList.add('completed');
+                } else {
+                    dayBox.classList.remove('completed');
+                }
+            }
+            
+            // Aggiorna testo dei progressi nella settimana
+            const weekDays = studyPlanDays.filter(d => d.week === currentModalDay.week);
+            const completedInWeek = weekDays.filter(d => appState.completedDays[`w${d.week}d${d.day}`] === true).length;
+            document.getElementById(`week-${currentModalDay.week}-prog`).innerText = `${completedInWeek} di 7 Giorni completati`;
+
+            closeModal();
+        }
+
+        // ================= JS: BANCA DOMANDE =================
+        function generateQAList() {
+            const container = document.getElementById('qa-cards-list');
+            container.innerHTML = '';
+
+            qaDatabase.forEach(q => {
+                const status = appState.qaStatus[q.id] || 'to-study';
+                
+                const card = document.createElement('div');
+                card.className = 'qa-card';
+                card.id = `qa-${q.id}`;
+                card.setAttribute('data-standard', q.standard);
+                card.setAttribute('data-profs', q.professors.join(','));
+
+                card.innerHTML = `
+                    <div class="qa-header-area" onclick="toggleQACard(${q.id})">
+                        <div>
+                            <div class="qa-meta">
+                                <span class="tag standard">${q.standard}</span>
+                                ${q.professors.map(p => `<span class="tag prof">${p}</span>`).join(' ')}
+                            </div>
+                            <h4 class="qa-title-text">${q.question}</h4>
+                        </div>
+                        <div class="qa-controls-right">
+                            <div class="status-pill ${status === 'learned' ? 'learned' : status === 'in-progress' ? 'in-progress' : 'to-study'}" id="pill-${q.id}"></div>
+                            <i class="fa-solid fa-chevron-down expand-icon"></i>
+                        </div>
+                    </div>
+                    <div class="qa-body-area">
+                        <div class="qa-answer">${q.answer}</div>
+                        <div class="qa-status-selector">
+                            <span>Stato di apprendimento:</span>
+                            <button class="status-btn to-study-btn ${status === 'to-study' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'to-study')">Da Studiare 🔴</button>
+                            <button class="status-btn in-progress-btn ${status === 'in-progress' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'in-progress')">In Corso 🟡</button>
+                            <button class="status-btn learned-btn ${status === 'learned' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'learned')">Completato 🟢</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleQACard(id) {
+            const card = document.getElementById(`qa-${id}`);
+            card.classList.toggle('expanded');
+        }
+
+        function setQAStatus(id, status) {
+            // Ferma la propagazione del click per evitare che chiuda la card
+            event.stopPropagation();
+            
+            appState.qaStatus[id] = status;
+            saveState();
+
+            // Aggiorna il colore della pillola
+            const pill = document.getElementById(`pill-${id}`);
+            pill.className = `status-pill ${status === 'learned' ? 'learned' : status === 'in-progress' ? 'in-progress' : 'to-study'}`;
+
+            // Aggiorna lo stato dei bottoni attivi nella card
+            const card = document.getElementById(`qa-${id}`);
+            card.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+            
+            let btnClass = '.to-study-btn';
+            if (status === 'in-progress') btnClass = '.in-progress-btn';
+            else if (status === 'learned') btnClass = '.learned-btn';
+            
+            card.querySelector(btnClass).classList.add('active');
+        }
+
+        function filterQA() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const filterStandard = document.getElementById('filter-standard').value;
+            const filterProf = document.getElementById('filter-prof').value;
+
+            document.querySelectorAll('.qa-card').forEach(card => {
+                const title = card.querySelector('.qa-title-text').innerText.toLowerCase();
+                const answer = card.querySelector('.qa-answer').innerText.toLowerCase();
+                const standard = card.getAttribute('data-standard');
+                const profs = card.getAttribute('data-profs').split(',');
+
+                const matchesSearch = title.includes(searchQuery) || answer.includes(searchQuery);
+                const matchesStandard = filterStandard === "" || standard === filterStandard;
+                const matchesProf = filterProf === "" || profs.includes(filterProf);
+
+                if (matchesSearch && matchesStandard && matchesProf) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ================= JS: SANDBOX CALCOLATORI =================
+        function calculateWACC() {
+            const rf = parseFloat(document.getElementById('calc-rf').value) / 100;
+            const beta = parseFloat(document.getElementById('calc-beta').value);
+            const rm = parseFloat(document.getElementById('calc-rm').value) / 100;
+            const kd = parseFloat(document.getElementById('calc-kd').value) / 100;
+            const equity = parseFloat(document.getElementById('calc-equity').value);
+            const debt = parseFloat(document.getElementById('calc-debt').value);
+            const tax = parseFloat(document.getElementById('calc-tax').value) / 100;
+
+            if (isNaN(rf) || isNaN(beta) || isNaN(rm) || isNaN(kd) || isNaN(equity) || isNaN(debt) || isNaN(tax)) {
+                alert("Assicurati di inserire valori numerici corretti in tutti i campi!");
+                return;
+            }
+
+            // CAPM Ke
+            const ke = rf + beta * (rm - rf);
+            const kdNet = kd * (1 - tax);
+            
+            // WACC
+            const totalCapital = equity + debt;
+            const wacc = ke * (equity / totalCapital) + kdNet * (debt / totalCapital);
+
+            document.getElementById('res-ke').innerText = (ke * 100).toFixed(2) + '%';
+            document.getElementById('res-kd-net').innerText = (kdNet * 100).toFixed(2) + '%';
+            document.getElementById('res-wacc').innerText = (wacc * 100).toFixed(2) + '%';
+            document.getElementById('wacc-result').style.display = 'block';
+        }
+
+        function calculateLease() {
+            const pmnt = parseFloat(document.getElementById('lease-payment').value);
+            const rate = parseFloat(document.getElementById('lease-rate').value) / 100;
+            const years = parseInt(document.getElementById('lease-years').value);
+
+            if (isNaN(pmnt) || isNaN(rate) || isNaN(years) || years < 1) {
+                alert("Verifica i dati inseriti per il calcolo del leasing!");
+                return;
+            }
+
+            // Calcolo Valore Attuale (Present Value - PV) dei canoni posticipati (Formula di rendita annua immediata posticipata)
+            let pv = 0;
+            for (let t = 1; t <= years; t++) {
+                pv += pmnt / Math.pow(1 + rate, t);
+            }
+
+            document.getElementById('res-lease-pv').innerText = '€' + pv.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Generazione Tabella Ammortamento
+            const tableBody = document.getElementById('lease-table-body');
+            tableBody.innerHTML = '';
+
+            let balance = pv;
+            for (let year = 1; year <= years; year++) {
+                const interest = balance * rate;
+                const principal = pmnt - interest;
+                const prevBalance = balance;
+                balance -= principal;
+                if (balance < 0.01) balance = 0; // Evita errori virgola mobile di arrotondamento
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${year}</td>
+                    <td class="amount">€${pmnt.toLocaleString('it-IT', {maximumFractionDigits:0})}</td>
+                    <td class="amount" style="color:var(--red);">€${interest.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                    <td class="amount" style="color:var(--green);">€${principal.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                    <td class="amount">€${balance.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+
+            document.getElementById('lease-result').style.display = 'block';
+        }
+
+        function calculateEPS() {
+            const income = parseFloat(document.getElementById('eps-income').value);
+            const preferred = parseFloat(document.getElementById('eps-preferred').value);
+            const shares = parseFloat(document.getElementById('eps-shares').value);
+
+            if (isNaN(income) || isNaN(preferred) || isNaN(shares) || shares <= 0) {
+                alert("I dati inseriti per l'EPS non sono validi!");
+                return;
+            }
+
+            const attributable = income - preferred;
+            const eps = attributable / shares;
+
+            document.getElementById('res-eps-attributable').innerText = '€' + attributable.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('res-eps').innerText = '€' + eps.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' per azione';
+            document.getElementById('eps-result').style.display = 'block';
+        }
+
+        // ================= JS: FLASHCARDS =================
+        let currentCardIndex = 0;
+
+        function updateFlashcard() {
+            const cardData = flashcards[currentCardIndex];
+            
+            // Rimuovi classe flipped se presente prima di cambiare i dati
+            const flipper = document.getElementById('flashcard');
+            flipper.classList.remove('flipped');
+
+            setTimeout(() => {
+                document.getElementById('card-front-badge').innerText = cardData.standard;
+                document.getElementById('card-front-text').innerText = cardData.question;
+                document.getElementById('card-back-badge').innerText = cardData.standard + ' - Risposta';
+                document.getElementById('card-back-title').innerText = cardData.title;
+                document.getElementById('card-back-html').innerHTML = cardData.html;
+                document.getElementById('flashcard-counter').innerText = `${currentCardIndex + 1} di ${flashcards.length}`;
+            }, 150); // Piccolo delay per attendere che la rotazione sia coperta
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+            updateFlashcard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+            updateFlashcard();
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                localStorage.setItem('pci_theme', 'dark');
+                icon.className = 'fa-solid fa-sun';
+                text.innerText = 'Light Mode';
+            } else {
+                body.classList.add('light-theme');
+                localStorage.setItem('pci_theme', 'light');
+                icon.className = 'fa-solid fa-moon';
+                text.innerText = 'Dark Mode';
+            }
+        }
+
+        // Inizializzazione della Pagina
+        window.onload = function() {
+            loadState();
+            
+            // Carica tema salvato
+            const savedTheme = localStorage.getItem('pci_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon';
+                document.getElementById('theme-text').innerText = 'Dark Mode';
+            } else {
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+                document.getElementById('theme-text').innerText = 'Light Mode';
+            }
+            
+            generateCalendar();
+            generateQAList();
+            updateFlashcard();
+        };
+    </script>
+
+</body>
+</html>

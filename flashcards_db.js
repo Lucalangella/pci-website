@@ -449,5 +449,176 @@ const flashcardsDatabase = [
     "question": "Emissione di obbligazioni convertibili: cassa incassata €1.000.000 (di cui valore attuale del debito €950.000). Scrittura di stipula.",
     "title": "Scorporo dello Strumento Composto (IAS 32)",
     "html": "\n            <table class=\"journal-table\">\n                <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>\n                <tr><td>Cassa / Banca (Attivo SP)</td><td>1.000.000</td><td></td></tr>\n                <tr><td>Prestiti Obbligazionari Convertibili (Passivo)</td><td></td><td>950.000</td></tr>\n                <tr><td>Riserva per Opzione Conversione (Equity)</td><td></td><td>50.000</td></tr>\n            </table>\n            <p style=\"font-size:0.85rem; color:var(--text-secondary); text-align:left; margin-top:8px;\">Lo IAS 32 impone di scindere lo strumento composto isolando la passività finanziaria dall'opzione di conversione (Patrimonio Netto).</p>\n        "
+  },
+  {
+    "id": 51,
+    "standard": "IAS 38 (IDENTIFICABILITÀ & DIRITTI)",
+    "module": "IAS 38",
+    "tag": "IDENTIFICABILITÀ & DIRITTI",
+    "question": "Una licenza d'uso non è trasferibile separatamente a terzi, ma attribuisce diritti contrattuali controllati e benefici economici futuri con costo attendibile. La non trasferibilità impedisce da sola l'iscrizione secondo IAS 38?",
+    "title": "Concetto Chiave: IDENTIFICABILITÀ & DIRITTI",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>NO, l'iscrizione NON è impedita.</strong></p><p style='text-align:left; margin:6px 0;'>Secondo lo IAS 38, l'identificabilità sussiste se il bene è <em>separabile</em> OPPURE se deriva da <em>diritti contrattuali o legali</em>, indipendentemente dalla loro trasferibilità.</p><p style='text-align:left; margin:6px 0;'>Essendo un diritto contrattuale controllato con benefici futuri attendibili, si iscrive all'attivo.</p></div>"
+  },
+  {
+    "id": 52,
+    "standard": "IAS 38 (RICERCA & SVILUPPO)",
+    "module": "IAS 38",
+    "tag": "RICERCA & SVILUPPO",
+    "question": "Un progetto comporta costi di Ricerca per €30.000, Sviluppo per €20.000 prima di soddisfare i 6 criteri di capitalizzazione, e Sviluppo direttamente attribuibile per €50.000 dopo tale data. Quali importi si rilevano a P&L e all'Attivo dello SP?",
+    "title": "Concetto Chiave: RICERCA & SVILUPPO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Attività immateriale (SP): €50.000</strong></p><p style='text-align:left; margin:6px 0;'><strong>Costi di periodo (P&L): €50.000</strong> (€30.000 ricerca + €20.000 sviluppo preliminare).</p><p style='text-align:left; margin:6px 0;'>Solo lo sviluppo successivo al rispetto di tutti i 6 criteri si capitalizza. Vige il <em>divieto assoluto di ripristino retroattivo</em> dei costi precedentemente imputati a P&L.</p></div>"
+  },
+  {
+    "id": 53,
+    "standard": "IAS 38 (CRITERI PIRATE SVILUPPO)",
+    "module": "IAS 38",
+    "tag": "CRITERI PIRATE SVILUPPO",
+    "question": "La fattibilità tecnica di un progetto è pienamente dimostrata, ma la società non riesce a dimostrare la disponibilità di risorse finanziarie e tecniche per completarlo. Può capitalizzare i costi di sviluppo sostenuti?",
+    "title": "Concetto Chiave: CRITERI PIRATE SVILUPPO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>NO, non può capitalizzare.</strong></p><p style='text-align:left; margin:6px 0;'>I 6 criteri di capitalizzazione dello IAS 38 (PIRATE) sono <em>tassativi e cumulativi</em>.</p><p style='text-align:left; margin:6px 0;'>La fattibilità tecnica da sola non basta: se mancano le risorse finanziarie o tecniche certe per portare a termine l'opera, tutti i costi devono essere imputati a P&L.</p></div>"
+  },
+  {
+    "id": 54,
+    "standard": "IAS 38 (VITA UTILE INDEFINITA)",
+    "module": "IAS 38",
+    "tag": "VITA UTILE INDEFINITA",
+    "question": "Qual è la combinazione di trattamenti contabili obbligatoria per un'attività immateriale a vita utile indefinita?",
+    "title": "Concetto Chiave: VITA UTILE INDEFINITA",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li><strong>Nessun ammortamento sistematico</strong>;</li><li><strong>Impairment test obbligatorio almeno annuale</strong> ex IAS 36 a prescindere da indicatori di perdita;</li><li><strong>Riesame annuale dello status di vita utile indefinita</strong> alla chiusura di ogni esercizio.</li></ul></div>"
+  },
+  {
+    "id": 55,
+    "standard": "IAS 38 (DIVIETI CAPITALIZZAZIONE)",
+    "module": "IAS 38",
+    "tag": "DIVIETI CAPITALIZZAZIONE",
+    "question": "Quali elementi generati internamente non possono MAI essere iscritti all'Attivo dello Stato Patrimoniale ex IAS 38?",
+    "title": "Concetto Chiave: DIVIETI CAPITALIZZAZIONE",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'>Divieto assoluto di capitalizzazione interna per:</p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li>Avviamento generato internamente;</li><li>Marchi, liste clienti, testate generati internamente;</li><li>Spese di start-up e impianto;</li><li>Spese di formazione dipendenti;</li><li>Spese di pubblicità e marketing.</li></ul><p style='text-align:left; margin:6px 0;'>Tutti a P&L nell'esercizio di sostenimento.</p></div>"
+  },
+  {
+    "id": 56,
+    "standard": "IFRS 16 (DEFINIZIONE & CONTROLLO)",
+    "module": "IFRS 16",
+    "tag": "DEFINIZIONE & CONTROLLO",
+    "question": "Un contratto dà accesso a un bene identificato. Quale ulteriore condizione è essenziale secondo IFRS 16 per concludere che contiene un leasing?",
+    "title": "Concetto Chiave: DEFINIZIONE & CONTROLLO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Che il cliente controlli l'uso del bene.</strong></p><p style='text-align:left; margin:6px 0;'>Il controllo sussiste se il cliente ha simultaneamente:</p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li>Il diritto di ottenere <em>sostanzialmente tutti i benefici economici</em> dall'uso;</li><li>Il diritto di <em>dirigere l'utilizzo</em> del bene (come e per quale scopo usarlo).</li></ul></div>"
+  },
+  {
+    "id": 57,
+    "standard": "IFRS 16 (RILEVAZIONE INIZIALE)",
+    "module": "IFRS 16",
+    "tag": "RILEVAZIONE INIZIALE",
+    "question": "Alla decorrenza di un leasing: Valore Attuale pagamenti residui = €90.000; Pagamento versato alla decorrenza = €6.000; Costi diretti iniziali sostenuti = €4.000; Incentivi ricevuti dal locatore = €2.000. Quali sono Diritto d'Uso (ROU Asset) e Debito iniziali?",
+    "title": "Concetto Chiave: RILEVAZIONE INIZIALE",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Diritto d'Uso: €98.000 | Debito iniziale: €90.000</strong></p><p style='text-align:left; margin:6px 0;'><em>Formula ROU:</em> Debito residuo (€90.000) + Pagamento decorrenza (€6.000) + Costi diretti (€4.000) - Incentivi (€2.000) = <strong>€98.000</strong>.</p><p style='text-align:left; margin:6px 0;'>Il debito è solo €90.000 poiché i €6.000 sono già stati saldati al momento zero.</p></div>"
+  },
+  {
+    "id": 58,
+    "standard": "IFRS 16 (SCRITTURA CANONE & INTERESSI)",
+    "module": "IFRS 16",
+    "tag": "SCRITTURA CANONE & INTERESSI",
+    "question": "Debito leasing all'1/1 = €100.000, tasso annuo = 5%, canone fine anno = €25.000. Quale scrittura a libro giornale registra il pagamento del canone e l'interesse annuo di competenza?",
+    "title": "Concetto Chiave: SCRITTURA CANONE & INTERESSI",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Dare Interessi Passivi €5.000 e Dare Debito Leasing €20.000 / Avere Banca €25.000</strong></p><p style='text-align:left; margin:6px 0;'>Interessi: €100.000 x 5% = €5.000 (P&L).</p><p style='text-align:left; margin:6px 0;'>Quota capitale a rimborso debito: €25.000 - €5.000 = €20.000 (riduce il debito residuo a €80.000).</p></div>"
+  },
+  {
+    "id": 59,
+    "standard": "IFRS 16 (ESENZIONI LOCATARIO)",
+    "module": "IFRS 16",
+    "tag": "ESENZIONI LOCATARIO",
+    "question": "Un contratto di leasing ha durata di 12 mesi e non contiene un'opzione di riscatto. Quale affermazione descrive la facoltà di esenzione per leasing a breve termine?",
+    "title": "Concetto Chiave: ESENZIONI LOCATARIO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>È una scelta contabile facoltativa del locatario.</strong></p><p style='text-align:left; margin:6px 0;'>Il locatario può scegliere di non applicare il modello ROU/Debito, imputando i canoni a quote costanti a Conto Economico come costo d'esercizio.</p><p style='text-align:left; margin:6px 0;'>Si applica per contratti <= 12 mesi senza opzione d'acquisto e per beni di modico valore (< $5.000).</p></div>"
+  },
+  {
+    "id": 60,
+    "standard": "Criptovalute (BUSINESS MODEL & CLASSIFICAZIONE)",
+    "module": "Criptovalute",
+    "tag": "BUSINESS MODEL & CLASSIFICAZIONE",
+    "question": "Due imprese detengono Bitcoin: una li compra per rivenderli abitualmente ai clienti, l'altra li conserva come investimento a lungo termine. Quale informazione è decisiva per il loro trattamento contabile?",
+    "title": "Concetto Chiave: BUSINESS MODEL & CLASSIFICAZIONE",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Lo scopo della detenzione e il modello di attività (Business Model).</strong></p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li><strong>Vendita ordinaria / intermediazione</strong>: IAS 2 (Rimanenze);</li><li><strong>Investimento a lungo termine</strong>: IAS 38 (Attività Immateriali a vita indefinita).</li></ul><p style='text-align:left; margin:6px 0;'>Detenere lo stesso asset non comporta lo stesso trattamento contabile.</p></div>"
+  },
+  {
+    "id": 61,
+    "standard": "Criptovalute (NON È CASSA NÉ CREDITO)",
+    "module": "Criptovalute",
+    "tag": "NON È CASSA NÉ CREDITO",
+    "question": "La tesoreria propone di considerare Bitcoin equivalenti a un deposito bancario o a disponibilità liquide perché possono essere scambiati su una piattaforma online. Qual è l'obiezione contabile più fondata?",
+    "title": "Concetto Chiave: NON È CASSA NÉ CREDITO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>La negoziabilità non garantisce un importo stabile né equivale a un credito bancario.</strong></p><p style='text-align:left; margin:6px 0;'>Bitcoin non è valuta sovrana né dà diritto contrattuale a ricevere cassa da una controparte. L'altissima volatilità esclude la qualifica di <em>Cash Equivalent</em> (IAS 7).</p></div>"
+  },
+  {
+    "id": 62,
+    "standard": "Criptovalute (VARIAZIONI DI PREZZO)",
+    "module": "Criptovalute",
+    "tag": "VARIAZIONI DI PREZZO",
+    "question": "Il prezzo di mercato dei Bitcoin detenuti da un'impresa aumenta rispetto all'acquisto. Prima di concludere che l'aumento sia un utile da rilevare a Conto Economico, cosa occorre verificare?",
+    "title": "Concetto Chiave: VARIAZIONI DI PREZZO",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Occorre verificare il criterio contabile applicabile.</strong></p><p style='text-align:left; margin:6px 0;'>Un rialzo di prezzo non genera automaticamente utile a P&L:</p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li>IAS 38 Cost Model: nessun utile rilevato;</li><li>IAS 38 Revaluation Model: aumento a Riserva OCI;</li><li>IAS 2 Dealer: utile a P&L.</li></ul></div>"
+  },
+  {
+    "id": 63,
+    "standard": "IAS 36 (VALORE RECUPERABILE & PERDITA)",
+    "module": "IAS 36",
+    "tag": "VALORE RECUPERABILE & PERDITA",
+    "question": "Un impianto ha valore contabile €200.000, Fair Value €175.000, costi di dismissione €5.000 e Valore d'Uso €180.000. Quale perdita di valore per impairment occorre rilevare secondo IAS 36?",
+    "title": "Concetto Chiave: VALORE RECUPERABILE & PERDITA",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Perdita da rilevare: €20.000 a P&L</strong></p><p style='text-align:left; margin:6px 0;'>1. FV Netto: €175.000 - €5.000 = €170.000;</p><p style='text-align:left; margin:6px 0;'>2. Valore Recuperabile: max(€170.000, €180.000) = <strong>€180.000</strong>;</p><p style='text-align:left; margin:6px 0;'>3. Impairment: €200.000 - €180.000 = <strong>€20.000</strong>.</p></div>"
+  },
+  {
+    "id": 64,
+    "standard": "IAS 36 (RIPRISTINO DI VALORE & CEILING)",
+    "module": "IAS 36",
+    "tag": "RIPRISTINO DI VALORE & CEILING",
+    "question": "Un cespite valutato al costo ha valore contabile residuo di €64.000 dopo una precedente svalutazione. Il valore recuperabile sale a €95.000. Senza la svalutazione, il valore contabile ammortizzato alla stessa data sarebbe €84.000. Qual è il ripristino massimo rilevabile a P&L?",
+    "title": "Concetto Chiave: RIPRISTINO DI VALORE & CEILING",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Ripristino massimo: €20.000 a P&L</strong></p><p style='text-align:left; margin:6px 0;'><em>Regola del Tetto Massimo:</em> il bene può salire solo fino a €84.000 (valore che avrebbe avuto senza svalutazione).</p><p style='text-align:left; margin:6px 0;'>Ripristino: €84.000 - €64.000 = <strong>€20.000</strong> (e non €31.000!).</p></div>"
+  },
+  {
+    "id": 65,
+    "standard": "IAS 36 (CASH-GENERATING UNIT)",
+    "module": "IAS 36",
+    "tag": "CASH-GENERATING UNIT",
+    "question": "Una singola macchina in uno stabilimento produttivo non genera entrate finanziarie indipendenti. A quale livello deve essere condotto l'impairment test ex IAS 36?",
+    "title": "Concetto Chiave: CASH-GENERATING UNIT",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>A livello di Cash-Generating Unit (CGU).</strong></p><p style='text-align:left; margin:6px 0;'>È il più piccolo gruppo identificabile di attività che genera entrate finanziarie ampiamente indipendenti.</p></div>"
+  },
+  {
+    "id": 66,
+    "standard": "IAS 36 (DIVIETO RIPRISTINO GOODWILL)",
+    "module": "IAS 36",
+    "tag": "DIVIETO RIPRISTINO GOODWILL",
+    "question": "Le prospettive economiche di una CGU migliorano radicalmente dopo che l'anno precedente era stata rilevata una svalutazione dell'avviamento. Cosa accade alla perdita imputata all'avviamento?",
+    "title": "Concetto Chiave: DIVIETO RIPRISTINO GOODWILL",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>NON si ripristina mai, divieto assoluto.</strong></p><p style='text-align:left; margin:6px 0;'>La perdita per svalutazione dell'avviamento è irreversibile ex IAS 36, perché qualsiasi ripristino equivarrebbe a rilevare avviamento generato internamente (vietato da IAS 38).</p></div>"
+  },
+  {
+    "id": 67,
+    "standard": "IAS 36 (VALUE IN USE & FLUSSI)",
+    "module": "IAS 36",
+    "tag": "VALUE IN USE & FLUSSI",
+    "question": "Quali elementi devono essere RIGOROSAMENTE ESCLUSI dalla stima dei flussi di cassa per il calcolo del Valore d'Uso (Value in Use) ex IAS 36?",
+    "title": "Concetto Chiave: VALUE IN USE & FLUSSI",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Esclusioni tassative (Regola As-Is):</strong></p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li>Future ristrutturazioni non ancora deliberate e vincolanti;</li><li>Miglioramenti incrementali ed espansioni future dell'asset;</li><li>Flussi finanziari e imposte sul reddito (tasso WACC pre-tax).</li></ul></div>"
+  },
+  {
+    "id": 68,
+    "standard": "IAS 36 (ORDINE SVALUTAZIONE CGU)",
+    "module": "IAS 36",
+    "tag": "ORDINE SVALUTAZIONE CGU",
+    "question": "In quale ordine si imputa una perdita per riduzione di valore accertata complessivamente su una Cash-Generating Unit (CGU)?",
+    "title": "Concetto Chiave: ORDINE SVALUTAZIONE CGU",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><ol style='text-align:left; margin:6px 0; padding-left:18px;'><li><strong>Prima interamente sull'Avviamento (Goodwill)</strong> fino ad azzeramento;</li><li><strong>Poi pro-quota sulle altre attività della CGU</strong> in base al carrying amount.</li></ol><p style='text-align:left; margin:6px 0;'>Salvaguardia: nessun asset scende sotto max(FV netto, VIU, 0).</p></div>"
+  },
+  {
+    "id": 69,
+    "standard": "IAS 36 (CORPORATE ASSETS)",
+    "module": "IAS 36",
+    "tag": "CORPORATE ASSETS",
+    "question": "Cosa sono i Corporate Assets (es. sede centrale, IT di gruppo) e come vengono testati per impairment secondo le slide di aula?",
+    "title": "Concetto Chiave: CORPORATE ASSETS",
+    "html": "<div style='font-size:0.92rem; line-height:1.55; color:var(--text-primary);'><p style='text-align:left; margin:6px 0;'><strong>Attività condivise (sede, IT, R&D) senza flussi autonomi.</strong></p><ul style='text-align:left; margin:6px 0; padding-left:18px;'><li><em>Bottom-up test:</em> allocazione pro-quota (es. vita utile ponderata) alle singole CGU;</li><li><em>Top-down test:</em> test prima della CGU autonoma e poi a livello aggregato con Corporate Asset.</li></ul></div>"
   }
 ];

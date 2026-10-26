@@ -1643,8 +1643,471 @@
             { week: 4, day: 28, topic: "Simulazione Generale d'Esame", details: ["Simulazione completa basata sulle domande reali dei professori.", "Gestione del tempo e ripasso finale schemi di partita doppia."], ref: "Tutti i PDF del corso" }
         ];
 
-        // Database delle Flashcards
-        // I dati provengono da flashcards_db.js (flashcardsDatabase)
+        // Database delle Flashcards per Partita Doppia
+        const flashcards = [
+            {
+                standard: "IAS 16",
+                question: "Rivalutazione Impianto per €15.000 (nessuna svalutazione precedente). Qual è la scrittura?",
+                title: "Rivalutazione a Riserva OCI",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Impianti (Attivo SP)</td><td>15.000</td><td></td></tr>
+                        <tr><td>Riserva di Rivalutazione (Patrimonio Netto - OCI)</td><td></td><td>15.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">L'incremento patrimoniale transita dall'OCI per non gonfiare l'utile d'esercizio realizzato.</p>
+                `
+            },
+            {
+                standard: "IFRS 16",
+                question: "Stipula contratto di leasing: valore attuale canoni €80.000. Qual è la scrittura iniziale?",
+                title: "Rilevazione iniziale Diritto d'Uso",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Diritto d'Uso (ROU Asset - Attivo)</td><td>80.000</td><td></td></tr>
+                        <tr><td>Debito per Leasing (Lease Liability - Passivo)</td><td></td><td>80.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Si capitalizza il diritto d'uso iscrivendo in contropartita il debito di natura finanziaria.</p>
+                `
+            },
+            {
+                standard: "IAS 36",
+                question: "Svalutazione per Impairment dell'Avviamento (Goodwill) per €10.000. Qual è la scrittura?",
+                title: "Svalutazione Definitiva Avviamento",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Perdite da Svalutazione (Conto Economico)</td><td>10.000</td><td></td></tr>
+                        <tr><td>Avviamento (Goodwill - Attivo)</td><td></td><td>10.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Il Goodwill viene ridotto direttamente. Questa svalutazione non è mai ripristinabile in futuro.</p>
+                `
+            },
+            {
+                standard: "IFRS 2",
+                question: "Rilevazione annua del costo per stock options (equity-settled) assegnate ai dipendenti per €5.000.",
+                title: "Costo del personale con contropartita Riserva Equity",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Spese del Personale / Stock Options (CE)</td><td>5.000</td><td></td></tr>
+                        <tr><td>Riserva per Piani Azionari (Patrimonio Netto)</td><td></td><td>5.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Nelle operazioni equity-settled, la contropartita del costo è un incremento di riserve di patrimonio netto, non un debito.</p>
+                `
+            },
+            {
+                standard: "IAS 32",
+                question: "Emissione di obbligazioni convertibili: cassa incassata €1.000.000 (di cui valore attuale del debito €950.000). Scrittura di stipula.",
+                title: "Scorporo dello Strumento Composto (Ibrido)",
+                html: `
+                    <table class="journal-table">
+                        <tr><th>Conto</th><th>Dare (€)</th><th>Avere (€)</th></tr>
+                        <tr><td>Cassa / Banca (Attivo SP)</td><td>1.000.000</td><td></td></tr>
+                        <tr><td>Prestiti Obbligazionari Convertibili (Passivo)</td><td></td><td>950.000</td></tr>
+                        <tr><td>Riserva per Opzione Conversione (Equity)</td><td></td><td>50.000</td></tr>
+                    </table>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); text-align:left;">Lo IAS 32 impone di scindere lo strumento composto isolando la passività pura dall'opzione di conversione (Patrimonio Netto).</p>
+                `
+            }
+        ];
+
+        // Stato dell'applicazione (salvato in localStorage)
+        let appState = {
+            completedDays: {},
+            qaStatus: {} // id -> 'to-study' | 'in-progress' | 'learned'
+        };
+
+        // Carica stato da localStorage
+        function loadState() {
+            const saved = localStorage.getItem('pci_study_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                    if (!appState.completedDays) appState.completedDays = {};
+                    if (!appState.qaStatus) appState.qaStatus = {};
+                } catch (e) {
+                    console.error("Errore lettura localStorage", e);
+                }
+            }
+            updateOverallProgress();
+        }
+
+        // Salva stato in localStorage
+        function saveState() {
+            localStorage.setItem('pci_study_state', JSON.stringify(appState));
+            updateOverallProgress();
+        }
+
+        // Aggiorna indicatori di progresso globali
+        function updateOverallProgress() {
+            const totalDays = 28;
+            const completedCount = Object.keys(appState.completedDays).filter(k => appState.completedDays[k] === true).length;
+            const percentage = Math.round((completedCount / totalDays) * 100);
+            
+            // Progress circle svg
+            const circle = document.getElementById('progress-circle');
+            if (circle) {
+                const radius = 26;
+                const circumference = 2 * Math.PI * radius; // ~163.36
+                const offset = circumference - (percentage / 100) * circumference;
+                circle.strokeDashoffset = offset;
+            }
+            
+            document.getElementById('progress-text').innerText = percentage + '%';
+            document.getElementById('progress-subtitle').innerText = `${completedCount} di ${totalDays} giorni completati`;
+            
+            // Aggiorna contatori banca domande
+            const totalQ = qaDatabase.length;
+            let learnedQ = 0;
+            let inProgressQ = 0;
+            
+            qaDatabase.forEach(q => {
+                const status = appState.qaStatus[q.id];
+                if (status === 'learned') learnedQ++;
+                else if (status === 'in-progress') inProgressQ++;
+            });
+            
+            document.getElementById('stat-total-q').innerText = totalQ;
+            document.getElementById('stat-progress-q').innerText = inProgressQ;
+            document.getElementById('stat-completed-q').innerText = learnedQ;
+        }
+
+        // Switch delle sezioni nella sidebar
+        function switchSection(sectionId) {
+            // Rimuovi classe active a tutte le nav-item
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            // Aggiungi active all'elemento cliccato
+            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+                item.querySelector('span').innerText.toLowerCase().includes(sectionId === 'qabank' ? 'banca' : sectionId === 'studyplan' ? 'calendario' : sectionId === 'calculators' ? 'sandbox' : sectionId === 'flashcards' ? 'flashcards' : 'overview')
+            );
+            if (activeNav) activeNav.classList.add('active');
+
+            // Nascondi tutti i pannelli
+            document.querySelectorAll('.section-panel').forEach(panel => panel.classList.remove('active'));
+            // Mostra il pannello corrente
+            document.getElementById(`sec-${sectionId}`).classList.add('active');
+
+            // Cambia titolo header
+            const titleMap = {
+                overview: { title: "Overview Preparazione", subtitle: "Rendiconto del tuo percorso di studi da zero" },
+                studyplan: { title: "Calendario di Studio", subtitle: "Programma intensivo di 4 settimane (giorno per giorno)" },
+                qabank: { title: "Banca delle Risposte", subtitle: "Risposte complete alle domande d'esame per docente e principio contabile" },
+                calculators: { title: "Sandbox Calcoli Finanziari", subtitle: "Simulatori per leasing, WACC, CAPM ed utile per azione (EPS)" },
+                flashcards: { title: "Flashcards Interattive PCI", subtitle: "Mettiti alla prova con 69 flashcards avanzate sui 12 moduli d'esame" }
+            };
+            document.getElementById('page-title').innerText = titleMap[sectionId].title;
+            document.getElementById('page-subtitle').innerText = titleMap[sectionId].subtitle;
+        }
+
+        // ================= JS: CALENDARIO =================
+        function generateCalendar() {
+            const calendarView = document.getElementById('calendar-view');
+            calendarView.innerHTML = '';
+
+            for (let w = 1; w <= 4; w++) {
+                const weekCard = document.createElement('div');
+                weekCard.className = 'week-card';
+                
+                const weekDays = studyPlanDays.filter(d => d.week === w);
+                const completedInWeek = weekDays.filter(d => appState.completedDays[`w${w}d${d.day}`] === true).length;
+
+                weekCard.innerHTML = `
+                    <div class="week-header">
+                        <h3>Settimana ${w}: ${getWeekTheme(w)}</h3>
+                        <span class="week-progress" id="week-${w}-prog">${completedInWeek} di 7 Giorni completati</span>
+                    </div>
+                    <div class="days-grid" id="week-${w}-days"></div>
+                `;
+                calendarView.appendChild(weekCard);
+
+                const daysGrid = weekCard.querySelector(`#week-${w}-days`);
+                weekDays.forEach(d => {
+                    const dayKey = `w${w}d${d.day}`;
+                    const isCompleted = appState.completedDays[dayKey] === true;
+                    
+                    const dayBox = document.createElement('div');
+                    dayBox.className = `day-box ${isCompleted ? 'completed' : ''}`;
+                    dayBox.id = `box-${dayKey}`;
+                    dayBox.onclick = () => openDayModal(d.week, d.day);
+
+                    dayBox.innerHTML = `
+                        <div class="day-top">
+                            <span class="day-number">Giorno ${d.day}</span>
+                            <div class="day-checkbox">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div class="day-title">${d.topic}</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted); display:flex; align-items:center; gap:3px;">
+                            <i class="fa-solid fa-book"></i> ${d.ref}
+                        </div>
+                    `;
+                    daysGrid.appendChild(dayBox);
+                });
+            }
+        }
+
+        function getWeekTheme(w) {
+            const themes = {
+                1: "Quadro normativo, Conceptual Framework, IAS 1 e IAS 7",
+                2: "Immobilizzazioni e Svalutazioni (IAS 16, IAS 38, IAS 36)",
+                3: "Leasing (IFRS 16), Ricavi (IFRS 15) e Business Combinations (IFRS 3)",
+                4: "IFRS 9, OCI, Accantonamenti, EPS, IFRS 2 e Transizioni"
+            };
+            return themes[w];
+        }
+
+        // Modal Dettaglio Giorno
+        let currentModalDay = { week: 0, day: 0 };
+
+        function openDayModal(week, dayNum) {
+            const dayObj = studyPlanDays.find(d => d.week === week && d.day === dayNum);
+            if (!dayObj) return;
+
+            currentModalDay = { week, day: dayNum };
+            
+            document.getElementById('modal-week-name').innerText = `Settimana ${week}: ${getWeekTheme(week)}`;
+            document.getElementById('modal-day-title').innerText = `Giorno ${dayNum}`;
+            document.getElementById('modal-day-topic').innerText = dayObj.topic;
+
+            const detailsList = document.getElementById('modal-day-details');
+            detailsList.innerHTML = `
+                <h5>Argomenti da studiare oggi:</h5>
+                <ul>
+                    ${dayObj.details.map(det => `<li>${det}</li>`).join('')}
+                </ul>
+                <p style="font-size:0.82rem; color:var(--text-muted);"><i class="fa-solid fa-bookmark" style="color:var(--cyan); margin-right:4px;"></i> <strong>Riferimento Dispensa:</strong> ${dayObj.ref}</p>
+            `;
+
+            const dayKey = `w${week}d${dayNum}`;
+            const isCompleted = appState.completedDays[dayKey] === true;
+            const btn = document.getElementById('modal-complete-btn');
+            
+            if (isCompleted) {
+                btn.innerText = 'Segna come Non Completato';
+                btn.style.backgroundColor = 'var(--red)';
+            } else {
+                btn.innerText = 'Segna come Completato';
+                btn.style.backgroundColor = 'var(--green)';
+            }
+
+            document.getElementById('day-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('day-modal').classList.remove('active');
+        }
+
+        function toggleCurrentDay() {
+            const key = `w${currentModalDay.week}d${currentModalDay.day}`;
+            const currentlyCompleted = appState.completedDays[key] === true;
+            
+            appState.completedDays[key] = !currentlyCompleted;
+            saveState();
+
+            // Aggiorna il calendario visivamente
+            const dayBox = document.getElementById(`box-${key}`);
+            if (dayBox) {
+                if (!currentlyCompleted) {
+                    dayBox.classList.add('completed');
+                } else {
+                    dayBox.classList.remove('completed');
+                }
+            }
+            
+            // Aggiorna testo dei progressi nella settimana
+            const weekDays = studyPlanDays.filter(d => d.week === currentModalDay.week);
+            const completedInWeek = weekDays.filter(d => appState.completedDays[`w${d.week}d${d.day}`] === true).length;
+            document.getElementById(`week-${currentModalDay.week}-prog`).innerText = `${completedInWeek} di 7 Giorni completati`;
+
+            closeModal();
+        }
+
+        // ================= JS: BANCA DOMANDE =================
+        function generateQAList() {
+            const container = document.getElementById('qa-cards-list');
+            container.innerHTML = '';
+
+            qaDatabase.forEach(q => {
+                const status = appState.qaStatus[q.id] || 'to-study';
+                
+                const card = document.createElement('div');
+                card.className = 'qa-card';
+                card.id = `qa-${q.id}`;
+                card.setAttribute('data-standard', q.standard);
+                card.setAttribute('data-profs', q.professors.join(','));
+
+                card.innerHTML = `
+                    <div class="qa-header-area" onclick="toggleQACard(${q.id})">
+                        <div>
+                            <div class="qa-meta">
+                                <span class="tag standard">${q.standard}</span>
+                                ${q.professors.map(p => `<span class="tag prof">${p}</span>`).join(' ')}
+                            </div>
+                            <h4 class="qa-title-text">${q.question}</h4>
+                        </div>
+                        <div class="qa-controls-right">
+                            <div class="status-pill ${status === 'learned' ? 'learned' : status === 'in-progress' ? 'in-progress' : 'to-study'}" id="pill-${q.id}"></div>
+                            <i class="fa-solid fa-chevron-down expand-icon"></i>
+                        </div>
+                    </div>
+                    <div class="qa-body-area">
+                        <div class="qa-answer">${q.answer}</div>
+                        <div class="qa-status-selector">
+                            <span>Stato di apprendimento:</span>
+                            <button class="status-btn to-study-btn ${status === 'to-study' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'to-study')">Da Studiare 🔴</button>
+                            <button class="status-btn in-progress-btn ${status === 'in-progress' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'in-progress')">In Corso 🟡</button>
+                            <button class="status-btn learned-btn ${status === 'learned' ? 'active' : ''}" onclick="setQAStatus(${q.id}, 'learned')">Completato 🟢</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleQACard(id) {
+            const card = document.getElementById(`qa-${id}`);
+            card.classList.toggle('expanded');
+        }
+
+        function setQAStatus(id, status) {
+            // Ferma la propagazione del click per evitare che chiuda la card
+            event.stopPropagation();
+            
+            appState.qaStatus[id] = status;
+            saveState();
+
+            // Aggiorna il colore della pillola
+            const pill = document.getElementById(`pill-${id}`);
+            pill.className = `status-pill ${status === 'learned' ? 'learned' : status === 'in-progress' ? 'in-progress' : 'to-study'}`;
+
+            // Aggiorna lo stato dei bottoni attivi nella card
+            const card = document.getElementById(`qa-${id}`);
+            card.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+            
+            let btnClass = '.to-study-btn';
+            if (status === 'in-progress') btnClass = '.in-progress-btn';
+            else if (status === 'learned') btnClass = '.learned-btn';
+            
+            card.querySelector(btnClass).classList.add('active');
+        }
+
+        function filterQA() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const filterStandard = document.getElementById('filter-standard').value;
+            const filterProf = document.getElementById('filter-prof').value;
+
+            document.querySelectorAll('.qa-card').forEach(card => {
+                const title = card.querySelector('.qa-title-text').innerText.toLowerCase();
+                const answer = card.querySelector('.qa-answer').innerText.toLowerCase();
+                const standard = card.getAttribute('data-standard');
+                const profs = card.getAttribute('data-profs').split(',');
+
+                const matchesSearch = title.includes(searchQuery) || answer.includes(searchQuery);
+                const matchesStandard = filterStandard === "" || standard === filterStandard;
+                const matchesProf = filterProf === "" || profs.includes(filterProf);
+
+                if (matchesSearch && matchesStandard && matchesProf) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ================= JS: SANDBOX CALCOLATORI =================
+        function calculateWACC() {
+            const rf = parseFloat(document.getElementById('calc-rf').value) / 100;
+            const beta = parseFloat(document.getElementById('calc-beta').value);
+            const rm = parseFloat(document.getElementById('calc-rm').value) / 100;
+            const kd = parseFloat(document.getElementById('calc-kd').value) / 100;
+            const equity = parseFloat(document.getElementById('calc-equity').value);
+            const debt = parseFloat(document.getElementById('calc-debt').value);
+            const tax = parseFloat(document.getElementById('calc-tax').value) / 100;
+
+            if (isNaN(rf) || isNaN(beta) || isNaN(rm) || isNaN(kd) || isNaN(equity) || isNaN(debt) || isNaN(tax)) {
+                alert("Assicurati di inserire valori numerici corretti in tutti i campi!");
+                return;
+            }
+
+            // CAPM Ke
+            const ke = rf + beta * (rm - rf);
+            const kdNet = kd * (1 - tax);
+            
+            // WACC
+            const totalCapital = equity + debt;
+            const wacc = ke * (equity / totalCapital) + kdNet * (debt / totalCapital);
+
+            document.getElementById('res-ke').innerText = (ke * 100).toFixed(2) + '%';
+            document.getElementById('res-kd-net').innerText = (kdNet * 100).toFixed(2) + '%';
+            document.getElementById('res-wacc').innerText = (wacc * 100).toFixed(2) + '%';
+            document.getElementById('wacc-result').style.display = 'block';
+        }
+
+        function calculateLease() {
+            const pmnt = parseFloat(document.getElementById('lease-payment').value);
+            const rate = parseFloat(document.getElementById('lease-rate').value) / 100;
+            const years = parseInt(document.getElementById('lease-years').value);
+
+            if (isNaN(pmnt) || isNaN(rate) || isNaN(years) || years < 1) {
+                alert("Verifica i dati inseriti per il calcolo del leasing!");
+                return;
+            }
+
+            // Calcolo Valore Attuale (Present Value - PV) dei canoni posticipati (Formula di rendita annua immediata posticipata)
+            let pv = 0;
+            for (let t = 1; t <= years; t++) {
+                pv += pmnt / Math.pow(1 + rate, t);
+            }
+
+            document.getElementById('res-lease-pv').innerText = '€' + pv.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Generazione Tabella Ammortamento
+            const tableBody = document.getElementById('lease-table-body');
+            tableBody.innerHTML = '';
+
+            let balance = pv;
+            for (let year = 1; year <= years; year++) {
+                const interest = balance * rate;
+                const principal = pmnt - interest;
+                const prevBalance = balance;
+                balance -= principal;
+                if (balance < 0.01) balance = 0; // Evita errori virgola mobile di arrotondamento
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${year}</td>
+                    <td class="amount">€${pmnt.toLocaleString('it-IT', {maximumFractionDigits:0})}</td>
+                    <td class="amount" style="color:var(--red);">€${interest.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                    <td class="amount" style="color:var(--green);">€${principal.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                    <td class="amount">€${balance.toLocaleString('it-IT', {maximumFractionDigits:2})}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+
+            document.getElementById('lease-result').style.display = 'block';
+        }
+
+        function calculateEPS() {
+            const income = parseFloat(document.getElementById('eps-income').value);
+            const preferred = parseFloat(document.getElementById('eps-preferred').value);
+            const shares = parseFloat(document.getElementById('eps-shares').value);
+
+            if (isNaN(income) || isNaN(preferred) || isNaN(shares) || shares <= 0) {
+                alert("I dati inseriti per l'EPS non sono validi!");
+                return;
+            }
+
+            const attributable = income - preferred;
+            const eps = attributable / shares;
+
+            document.getElementById('res-eps-attributable').innerText = '€' + attributable.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('res-eps').innerText = '€' + eps.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' per azione';
+            document.getElementById('eps-result').style.display = 'block';
+        }
+// ================= JS: FLASHCARDS INTERATTIVE (69 CARDS - 12 MODULI) =================
         let activeFlashcards = typeof flashcardsDatabase !== 'undefined' ? [...flashcardsDatabase] : [];
         let currentCardIndex = 0;
         let siteKnownSet = new Set();
@@ -1656,9 +2119,12 @@
                 btnElement.classList.add('active');
             }
             if (moduleName === 'ALL') {
-                activeFlashcards = [...flashcardsDatabase];
+                activeFlashcards = typeof flashcardsDatabase !== 'undefined' ? [...flashcardsDatabase] : [];
             } else {
-                activeFlashcards = flashcardsDatabase.filter(c => c.module.includes(moduleName) || c.standard.includes(moduleName));
+                activeFlashcards = (typeof flashcardsDatabase !== 'undefined' ? flashcardsDatabase : []).filter(c => 
+                    (c.module && c.module.includes(moduleName)) || 
+                    (c.standard && c.standard.includes(moduleName))
+                );
             }
             currentCardIndex = 0;
             updateFlashcard();
@@ -1681,22 +2147,36 @@
             if (flipper) flipper.classList.remove('flipped');
 
             setTimeout(() => {
-                document.getElementById('card-front-badge').innerText = cardData.standard;
-                document.getElementById('card-front-text').innerText = cardData.question;
-                document.getElementById('card-back-badge').innerText = cardData.standard + ' - Risposta';
-                document.getElementById('card-back-title').innerText = cardData.title;
-                document.getElementById('card-back-html').innerHTML = cardData.html;
-                document.getElementById('flashcard-counter').innerText = `${currentCardIndex + 1} di ${activeFlashcards.length}`;
+                const frontBadge = document.getElementById('card-front-badge');
+                if (frontBadge) frontBadge.innerText = cardData.standard || cardData.module || 'PCI';
+
+                const frontText = document.getElementById('card-front-text');
+                if (frontText) frontText.innerText = cardData.question;
+
+                const backBadge = document.getElementById('card-back-badge');
+                if (backBadge) backBadge.innerText = (cardData.standard || cardData.module || 'PCI') + ' - Risposta';
+
+                const backTitle = document.getElementById('card-back-title');
+                if (backTitle) backTitle.innerText = cardData.title || 'Concetto Chiave';
+
+                const backHtml = document.getElementById('card-back-html');
+                if (backHtml) backHtml.innerHTML = cardData.html || cardData.answer || '';
+
+                const counter = document.getElementById('flashcard-counter');
+                if (counter) counter.innerText = `${currentCardIndex + 1} di ${activeFlashcards.length}`;
                 
                 // Stats
-                document.getElementById('stat-known-site').innerText = siteKnownSet.size;
-                document.getElementById('stat-review-site').innerText = siteReviewSet.size;
+                const knownEl = document.getElementById('stat-known-site');
+                if (knownEl) knownEl.innerText = siteKnownSet.size;
+
+                const reviewEl = document.getElementById('stat-review-site');
+                if (reviewEl) reviewEl.innerText = siteReviewSet.size;
                 
                 // Progress bar
                 const pct = ((currentCardIndex + 1) / activeFlashcards.length) * 100;
                 const pbar = document.getElementById('flashcard-pbar');
                 if (pbar) pbar.style.width = pct + '%';
-            }, 120);
+            }, 100);
         }
 
         function flipCard() {
@@ -1705,19 +2185,19 @@
         }
 
         function nextCard() {
-            if (activeFlashcards.length === 0) return;
+            if (!activeFlashcards || activeFlashcards.length === 0) return;
             currentCardIndex = (currentCardIndex + 1) % activeFlashcards.length;
             updateFlashcard();
         }
 
         function prevCard() {
-            if (activeFlashcards.length === 0) return;
+            if (!activeFlashcards || activeFlashcards.length === 0) return;
             currentCardIndex = (currentCardIndex - 1 + activeFlashcards.length) % activeFlashcards.length;
             updateFlashcard();
         }
 
         function markCardKnown() {
-            if (activeFlashcards.length === 0) return;
+            if (!activeFlashcards || activeFlashcards.length === 0) return;
             const card = activeFlashcards[currentCardIndex];
             siteKnownSet.add(card.id);
             siteReviewSet.delete(card.id);
@@ -1725,17 +2205,17 @@
         }
 
         function markCardReview() {
-            if (activeFlashcards.length === 0) return;
+            if (!activeFlashcards || activeFlashcards.length === 0) return;
             const card = activeFlashcards[currentCardIndex];
             siteReviewSet.add(card.id);
             siteKnownSet.delete(card.id);
             nextCard();
         }
 
-        // Keyboard navigation
+        // Keyboard shortcuts
         window.addEventListener('keydown', (e) => {
             const sec = document.getElementById('sec-flashcards');
-            if (!sec || sec.style.display === 'none') return;
+            if (!sec || !sec.classList.contains('active')) return;
             if (e.code === 'Space') {
                 e.preventDefault();
                 flipCard();
@@ -1758,13 +2238,13 @@
             if (body.classList.contains('light-theme')) {
                 body.classList.remove('light-theme');
                 localStorage.setItem('pci_theme', 'dark');
-                icon.className = 'fa-solid fa-sun';
-                text.innerText = 'Light Mode';
+                if (icon) icon.className = 'fa-solid fa-sun';
+                if (text) text.innerText = 'Light Mode';
             } else {
                 body.classList.add('light-theme');
                 localStorage.setItem('pci_theme', 'light');
-                icon.className = 'fa-solid fa-moon';
-                text.innerText = 'Dark Mode';
+                if (icon) icon.className = 'fa-solid fa-moon';
+                if (text) text.innerText = 'Dark Mode';
             }
         }
 
@@ -1776,18 +2256,26 @@
             const savedTheme = localStorage.getItem('pci_theme');
             if (savedTheme === 'light') {
                 document.body.classList.add('light-theme');
-                document.getElementById('theme-icon').className = 'fa-solid fa-moon';
-                document.getElementById('theme-text').innerText = 'Dark Mode';
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                if (icon) icon.className = 'fa-solid fa-moon';
+                if (text) text.innerText = 'Dark Mode';
             } else {
-                document.getElementById('theme-icon').className = 'fa-solid fa-sun';
-                document.getElementById('theme-text').innerText = 'Light Mode';
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                if (icon) icon.className = 'fa-solid fa-sun';
+                if (text) text.innerText = 'Light Mode';
             }
             
             generateCalendar();
             generateQAList();
+            if (typeof flashcardsDatabase !== 'undefined') {
+                activeFlashcards = [...flashcardsDatabase];
+            }
             updateFlashcard();
         };
     </script>
+
 
 </body>
 </html>

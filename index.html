@@ -1552,42 +1552,25 @@
             </div>
         </section>
 
-        <!-- ================= SECTION: MINDMAP ================= -->
+                <!-- ================= SECTION: MINDMAP ================= -->
         <section id="sec-mindmap" class="section-panel">
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <!-- Toolbar superiore della Mappa -->
-                <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <span style="background: rgba(0, 180, 216, 0.15); color: var(--cyan); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
-                            <i class="fa-solid fa-circle-nodes"></i> 12 MODULI COMPLETI
-                        </span>
-                        <span style="font-size: 0.9rem; color: var(--text-secondary);">
-                            Usa la barra dentro la mappa per isolare un singolo modulo, espandere/comprimere i livelli o fare zoom.
-                        </span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <button onclick="toggleMindmapFullscreen()" class="filter-pill" style="border-color: var(--primary); color: var(--text-primary);">
-                            <i class="fa-solid fa-expand"></i> Schermo Intero nel Sito
-                        </button>
-                        <a href="https://lucalangella.github.io/pci-intercorso-mindmap/" target="_blank" rel="noopener" class="filter-pill" style="text-decoration: none; border-color: var(--cyan); color: var(--cyan);">
-                            <i class="fa-solid fa-up-right-from-square"></i> Apri Link Diretto (Nuova Scheda)
-                        </a>
-                        <button onclick="switchSection('flashcards')" class="filter-pill" style="border-color: var(--green); color: var(--green);">
-                            <i class="fa-solid fa-layer-group"></i> Vai alle 102 Flashcards
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Contenitore Iframe Interattivo -->
-                <div id="mindmap-frame-wrapper" style="width: 100%; height: 78vh; min-height: 680px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 16px 40px rgba(0,0,0,0.35); background: var(--bg-base); position: relative;">
-                    <iframe
-                        id="mindmap-iframe" onload="syncMindmapTheme()"
-                        src="mindmap.html"
-                        style="width: 100%; height: 100%; border: none; display: block;"
-                        allow="fullscreen"
-                        title="Mappa Concettuale Interattiva Principi Contabili Internazionali (12 Moduli)"
-                    ></iframe>
-                </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 12px;">
+                <button onclick="toggleMindmapFullscreen()" class="filter-pill" style="border-color: var(--primary); color: var(--text-primary); padding: 8px 16px;">
+                    <i class="fa-solid fa-expand"></i> Tutto Schermo
+                </button>
+                <a href="https://lucalangella.github.io/pci-intercorso-mindmap/" target="_blank" rel="noopener" class="filter-pill" style="text-decoration: none; border-color: var(--cyan); color: var(--cyan); padding: 8px 16px;">
+                    <i class="fa-solid fa-up-right-from-square"></i> Apri in Nuova Scheda
+                </a>
+            </div>
+            <div id="mindmap-frame-wrapper" style="width: 100%; height: 80vh; min-height: 700px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-base); position: relative;">
+                <iframe
+                    id="mindmap-iframe"
+                    onload="syncMindmapTheme()"
+                    src="mindmap.html?v=clean"
+                    style="width: 100%; height: 100%; border: none; display: block;"
+                    allow="fullscreen"
+                    title="Mappa Concettuale Principi Contabili Internazionali"
+                ></iframe>
             </div>
         </section>
 

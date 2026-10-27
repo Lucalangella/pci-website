@@ -1229,6 +1229,10 @@
                 <i class="fa-solid fa-toolbox"></i>
                 <span>Sandbox Calcoli</span>
             </div>
+            <div class="nav-item" onclick="switchSection('mindmap')">
+                <i class="fa-solid fa-diagram-project"></i>
+                <span>Mappa Concettuale</span>
+            </div>
             <div class="nav-item" onclick="switchSection('flashcards')">
                 <i class="fa-solid fa-layer-group"></i>
                 <span>Flashcards Interattive</span>
@@ -1304,6 +1308,32 @@
                         <h3 id="stat-completed-q">0</h3>
                         <p>Domande Completate</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Banner Accesso Rapido Mappa Concettuale & Flashcards Prova Intercorso -->
+            <div id="overview-mindmap-banner" style="background: linear-gradient(135deg, hsla(263, 80%, 22%, 0.45), hsla(190, 90%, 20%, 0.35)); border: 1px solid var(--cyan); border-radius: 16px; padding: 1.6rem 2rem; margin-bottom: 2rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem; box-shadow: 0 10px 30px rgba(0, 180, 216, 0.12);">
+                <div style="max-width: 680px;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 180, 216, 0.18); color: var(--cyan); padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
+                        <i class="fa-solid fa-diagram-project"></i> Prova Intercorso Completa — 12 Moduli
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: 1.45rem; color: var(--text-primary); margin-bottom: 6px;">
+                        Mappa Concettuale Interattiva &amp; 102 Flashcards d'Esame
+                    </h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem;">
+                        Esplora la mappa concettuale completa dei 12 argomenti (Framework, IAS 1, IFRS 18, IAS 7, Note/ESG, Ferrari, IAS 16, IFRS 5, IAS 38, IFRS 16, Crypto-Assets e IAS 36 Value in Use) direttamente nel sito oppure aprila a schermo intero.
+                    </p>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <button onclick="switchSection('mindmap')" style="background: linear-gradient(135deg, var(--primary), #0284c7); color: #fff; border: none; border-radius: 12px; padding: 11px 18px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 6px 18px var(--primary-glow);">
+                        <i class="fa-solid fa-sitemap"></i> Naviga Mappa nel Sito
+                    </button>
+                    <a href="https://lucalangella.github.io/pci-intercorso-mindmap/" target="_blank" rel="noopener" style="background: var(--bg-surface); color: var(--cyan); border: 1px solid var(--cyan); border-radius: 12px; padding: 11px 16px; font-weight: 700; font-size: 0.88rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-up-right-from-square"></i> Apri Mappa a Schermo Intero
+                    </a>
+                    <button onclick="switchSection('flashcards')" style="background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 11px 16px; font-weight: 700; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-layer-group" style="color: var(--green);"></i> 102 Flashcards
+                    </button>
                 </div>
             </div>
 
@@ -1503,6 +1533,48 @@
                     </div>
                 </div>
 
+            </div>
+        </section>
+
+        <!-- ================= SECTION: MINDMAP ================= -->
+        <section id="sec-mindmap" class="section-panel">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Toolbar superiore della Mappa -->
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="background: rgba(0, 180, 216, 0.15); color: var(--cyan); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+                            <i class="fa-solid fa-circle-nodes"></i> 12 MODULI COMPLETI
+                        </span>
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Usa la barra dentro la mappa per isolare un singolo modulo, espandere/comprimere i livelli o fare zoom.
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="toggleMindmapFullscreen()" class="filter-pill" style="border-color: var(--primary); color: var(--text-primary);">
+                            <i class="fa-solid fa-expand"></i> Schermo Intero nel Sito
+                        </button>
+                        <a href="https://lucalangella.github.io/pci-intercorso-mindmap/" target="_blank" rel="noopener" class="filter-pill" style="text-decoration: none; border-color: var(--cyan); color: var(--cyan);">
+                            <i class="fa-solid fa-up-right-from-square"></i> Apri Link Diretto (Nuova Scheda)
+                        </a>
+                        <a href="https://lucalangella.github.io/pci-intercorso-mindmap/mindmap.svg" target="_blank" rel="noopener" class="filter-pill" style="text-decoration: none;">
+                            <i class="fa-solid fa-vector-square"></i> SVG Vettoriale Figma
+                        </a>
+                        <button onclick="switchSection('flashcards')" class="filter-pill" style="border-color: var(--green); color: var(--green);">
+                            <i class="fa-solid fa-layer-group"></i> Vai alle 102 Flashcards
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenitore Iframe Interattivo -->
+                <div id="mindmap-frame-wrapper" style="width: 100%; height: 78vh; min-height: 680px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 16px 40px rgba(0,0,0,0.35); background: #0f172a; position: relative;">
+                    <iframe
+                        id="mindmap-iframe"
+                        src="https://lucalangella.github.io/pci-intercorso-mindmap/"
+                        style="width: 100%; height: 100%; border: none; display: block;"
+                        allow="fullscreen"
+                        title="Mappa Concettuale Interattiva Principi Contabili Internazionali (12 Moduli)"
+                    ></iframe>
+                </div>
             </div>
         </section>
 
@@ -1775,12 +1847,23 @@
         }
 
         // Switch delle sezioni nella sidebar
+        function toggleMindmapFullscreen() {
+            const wrapper = document.getElementById('mindmap-frame-wrapper');
+            if (!wrapper) return;
+            if (!document.fullscreenElement) {
+                if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+                else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
         function switchSection(sectionId) {
             // Rimuovi classe active a tutte le nav-item
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             // Aggiungi active all'elemento cliccato
             const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => 
-                item.querySelector('span').innerText.toLowerCase().includes(sectionId === 'qabank' ? 'banca' : sectionId === 'studyplan' ? 'calendario' : sectionId === 'calculators' ? 'sandbox' : sectionId === 'flashcards' ? 'flashcards' : 'overview')
+                item.querySelector('span').innerText.toLowerCase().includes(sectionId === 'qabank' ? 'banca' : sectionId === 'studyplan' ? 'calendario' : sectionId === 'calculators' ? 'sandbox' : sectionId === 'flashcards' ? 'flashcards' : sectionId === 'mindmap' ? 'mappa' : 'overview')
             );
             if (activeNav) activeNav.classList.add('active');
 
@@ -1795,8 +1878,17 @@
                 studyplan: { title: "Calendario di Studio", subtitle: "Programma intensivo di 4 settimane (giorno per giorno)" },
                 qabank: { title: "Banca delle Risposte", subtitle: "Risposte complete alle domande d'esame per docente e principio contabile" },
                 calculators: { title: "Sandbox Calcoli Finanziari", subtitle: "Simulatori per leasing, WACC, CAPM ed utile per azione (EPS)" },
+                mindmap: { title: "Mappa Concettuale Interattiva (12 Moduli)", subtitle: "Naviga i 12 argomenti della Prova Intercorso, isola i singoli moduli o apri a schermo intero" },
                 flashcards: { title: "Flashcards Interattive PCI", subtitle: "Mettiti alla prova con 102 flashcards avanzate sui 12 moduli d'esame" }
             };
+            if (sectionId === 'mindmap') {
+                setTimeout(() => {
+                    const ifr = document.getElementById('mindmap-iframe');
+                    if (ifr && ifr.contentWindow) {
+                        ifr.contentWindow.postMessage({ type: 'PCI_MM_FIT' }, '*');
+                    }
+                }, 200);
+            }
             document.getElementById('page-title').innerText = titleMap[sectionId].title;
             document.getElementById('page-subtitle').innerText = titleMap[sectionId].subtitle;
         }
